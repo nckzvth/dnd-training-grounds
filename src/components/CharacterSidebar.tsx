@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronRight
 } from 'lucide-react';
+import { getTokenImage } from '../utils/artAssets';
 
 interface CharacterSidebarProps {
   player: Combatant;
@@ -97,30 +98,35 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
     <div className="w-full flex flex-col gap-3 bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-xl">
       {/* Vitals Card */}
       <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold text-slate-100 flex items-center gap-1.5">
-              {player.name}
-              {player.spatial.isHiding && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-900/60 text-purple-300 border border-purple-700 flex items-center gap-1 font-sans">
-                  <EyeOff className="w-2.5 h-2.5" /> Hidden
-                </span>
-              )}
-            </h2>
-            <div className="text-xs text-amber-400 font-medium">
+        <div className="flex items-center gap-3">
+          <img
+            src={getTokenImage(player)}
+            alt={player.name}
+            className="w-14 h-14 rounded-full border-2 border-amber-400 shadow-md shadow-amber-500/20 object-cover shrink-0"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-slate-100 flex items-center gap-1.5 truncate">
+                {player.name}
+                {player.spatial.isHiding && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-900/60 text-purple-300 border border-purple-700 flex items-center gap-1 font-sans">
+                    <EyeOff className="w-2.5 h-2.5" /> Hidden
+                  </span>
+                )}
+              </h2>
+              <button
+                onClick={onOpenRestModal}
+                title="Take a Short or Long Rest to replenish hit points and spell slots"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-400 border border-slate-800 text-xs font-semibold transition shrink-0 ml-1"
+              >
+                <Moon className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Rest</span>
+              </button>
+            </div>
+            <div className="text-xs text-amber-400 font-medium truncate">
               {player.race} · {player.archetype}
             </div>
           </div>
-
-          {/* Rest Button */}
-          <button
-            onClick={onOpenRestModal}
-            title="Take a Short or Long Rest to replenish hit points and spell slots"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-400 border border-slate-800 text-xs font-semibold transition"
-          >
-            <Moon className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Rest</span>
-          </button>
         </div>
 
         {/* HP Bar */}

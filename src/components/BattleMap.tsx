@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { MapEditorBrush } from './MapEditorToolbar';
+import { ART_ASSETS, getTokenImage } from '../utils/artAssets';
 
 interface BattleMapProps {
   gridWidth: number;
@@ -219,7 +220,24 @@ export const BattleMap: React.FC<BattleMapProps> = ({
               </pattern>
             </defs>
 
-            {/* Grid Background Cells */}
+            {/* REAL ART TOP-DOWN BATTLEMAP */}
+            <image
+              href={ART_ASSETS.battlemap}
+              x="0"
+              y="0"
+              width={gridWidth * CELL_SIZE}
+              height={gridHeight * CELL_SIZE}
+              preserveAspectRatio="none"
+            />
+            {/* Tactical grid contrast overlay */}
+            <rect
+              width={gridWidth * CELL_SIZE}
+              height={gridHeight * CELL_SIZE}
+              fill="rgba(15, 23, 42, 0.2)"
+              pointerEvents="none"
+            />
+
+            {/* Grid Background Cells & Painted Obstacles */}
             {Array.from({ length: gridHeight }).map((_, y) =>
               Array.from({ length: gridWidth }).map((_, x) => {
                 const cell = cellMap.get(`${x},${y}`);
@@ -237,31 +255,43 @@ export const BattleMap: React.FC<BattleMapProps> = ({
                       height={CELL_SIZE}
                       fill={
                         isWall
-                          ? 'url(#wall-pattern)'
+                          ? 'rgba(15, 23, 42, 0.92)'
                           : isHalfCover
-                          ? 'url(#half-cover-pattern)'
+                          ? 'rgba(120, 53, 15, 0.65)'
                           : isDifficult
-                          ? 'url(#diff-pattern)'
-                          : '#090d16'
+                          ? 'rgba(180, 83, 9, 0.35)'
+                          : 'transparent'
                       }
-                      stroke={isHovered ? '#38bdf8' : '#1e293b'}
-                      strokeWidth={isHovered ? '2' : '1'}
+                      stroke={isHovered ? '#38bdf8' : 'rgba(255, 255, 255, 0.12)'}
+                      strokeWidth={isHovered ? '2' : '0.8'}
                     />
 
-                    {/* Half Cover Text badge on cell */}
+                    {/* Half Cover Crate badge on cell */}
                     {isHalfCover && (
-                      <text
-                        x={x * CELL_SIZE + CELL_SIZE / 2}
-                        y={y * CELL_SIZE + CELL_SIZE / 2 + 4}
-                        fill="#f59e0b"
-                        fontSize="9"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                        textAnchor="middle"
-                        opacity="0.9"
-                      >
-                        +2 AC
-                      </text>
+                      <g>
+                        <rect
+                          x={x * CELL_SIZE + 4}
+                          y={y * CELL_SIZE + 4}
+                          width={CELL_SIZE - 8}
+                          height={CELL_SIZE - 8}
+                          rx="4"
+                          fill="rgba(245, 158, 11, 0.15)"
+                          stroke="#f59e0b"
+                          strokeWidth="1.5"
+                          strokeDasharray="4 2"
+                        />
+                        <text
+                          x={x * CELL_SIZE + CELL_SIZE / 2}
+                          y={y * CELL_SIZE + CELL_SIZE / 2 + 4}
+                          fill="#fef08a"
+                          fontSize="10"
+                          fontFamily="monospace"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                        >
+                          📦 +2 AC
+                        </text>
+                      </g>
                     )}
 
                     {/* Difficult terrain text tag */}
@@ -269,14 +299,13 @@ export const BattleMap: React.FC<BattleMapProps> = ({
                       <text
                         x={x * CELL_SIZE + CELL_SIZE / 2}
                         y={y * CELL_SIZE + CELL_SIZE / 2 + 4}
-                        fill="#ea580c"
+                        fill="#fdba74"
                         fontSize="9"
                         fontFamily="monospace"
                         fontWeight="bold"
                         textAnchor="middle"
-                        opacity="0.9"
                       >
-                        2x MV
+                        ⚠️ 2x MV
                       </text>
                     )}
                   </g>
@@ -371,7 +400,7 @@ export const BattleMap: React.FC<BattleMapProps> = ({
               ))
             )}
 
-            {/* Combatant Tokens */}
+            {/* Real Art Combatant Tokens */}
             {combatants.map((c) => {
               if (c.vitals.currentHp <= 0) return null; // Downed
 
@@ -382,6 +411,11 @@ export const BattleMap: React.FC<BattleMapProps> = ({
               const cx = c.spatial.x * CELL_SIZE + CELL_SIZE / 2;
               const cy = c.spatial.y * CELL_SIZE + CELL_SIZE / 2;
 
+              const distToPlayer = calculateDistanceFt(player.spatial.x, player.spatial.y, c.spatial.x, c.spatial.y);
+              const normalRange = selectedAction ? (selectedAction.rangeFt || selectedAction.reachFt || 5) : 5;
+              const longRange = selectedAction?.longRangeFt || normalRange;
+              const isTargetable = selectedAction && !c.isFriendly && distToPlayer <= longRange;
+
               return (
                 <g
                   key={c.id}
@@ -389,42 +423,52 @@ export const BattleMap: React.FC<BattleMapProps> = ({
                   onClick={() => handleCellClick(c.spatial.x, c.spatial.y)}
                   onMouseEnter={() => setHoveredCell({ x: c.spatial.x, y: c.spatial.y })}
                 >
-                  {/* Aura for player */}
+                  <defs>
+                    <clipPath id={`token-clip-${c.id}`}>
+                      <circle cx={cx} cy={cy} r={CELL_SIZE * 0.38} />
+                    </clipPath>
+                  </defs>
+
+                  {/* Player celestial aura */}
                   {isCurrentPlayer && (
-                    <circle cx={cx} cy={cy} r={CELL_SIZE * 0.44} fill="none" stroke="#38bdf8" strokeWidth="2.5" className="animate-pulse" />
+                    <circle cx={cx} cy={cy} r={CELL_SIZE * 0.44} fill="none" stroke="#38bdf8" strokeWidth="3" className="animate-pulse" />
                   )}
 
-                  {/* Token Outer Ring */}
+                  {/* Pulsing Target Reticle if action is selected and target is in range */}
+                  {isTargetable && (
+                    <g className="animate-pulse">
+                      <circle cx={cx} cy={cy} r={CELL_SIZE * 0.46} fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" strokeWidth="2.5" strokeDasharray="6 3" />
+                      <line x1={cx - CELL_SIZE * 0.48} y1={cy} x2={cx - CELL_SIZE * 0.36} y2={cy} stroke="#ef4444" strokeWidth="2.5" />
+                      <line x1={cx + CELL_SIZE * 0.36} y1={cy} x2={cx + CELL_SIZE * 0.48} y2={cy} stroke="#ef4444" strokeWidth="2.5" />
+                      <line x1={cx} y1={cy - CELL_SIZE * 0.48} x2={cx} y2={cy - CELL_SIZE * 0.36} stroke="#ef4444" strokeWidth="2.5" />
+                      <line x1={cx} y1={cy + CELL_SIZE * 0.36} x2={cx} y2={cy + CELL_SIZE * 0.48} stroke="#ef4444" strokeWidth="2.5" />
+                    </g>
+                  )}
+
+                  {/* REAL ART TOKEN PORTRAIT */}
+                  <image
+                    href={getTokenImage(c)}
+                    x={cx - CELL_SIZE * 0.38}
+                    y={cy - CELL_SIZE * 0.38}
+                    width={CELL_SIZE * 0.76}
+                    height={CELL_SIZE * 0.76}
+                    clipPath={`url(#token-clip-${c.id})`}
+                    preserveAspectRatio="xMidYMid slice"
+                  />
+
+                  {/* Token Outer Metallic Bezel Ring */}
                   <circle
                     cx={cx}
                     cy={cy}
                     r={CELL_SIZE * 0.38}
-                    fill={
-                      isCurrentPlayer ? '#0f172a' :
-                      isFriendly ? '#064e3b' :
-                      c.aiType === 'static_dummy' ? '#334155' : '#450a0a'
-                    }
+                    fill="none"
                     stroke={
                       isCurrentPlayer ? '#38bdf8' :
                       isFriendly ? '#10b981' :
-                      c.aiType === 'static_dummy' ? '#64748b' : '#ef4444'
+                      c.aiType === 'static_dummy' ? '#f59e0b' : '#ef4444'
                     }
                     strokeWidth="2.5"
                   />
-
-                  {/* Initial Letters */}
-                  <text
-                    x={cx}
-                    y={cy + 5}
-                    fill="#ffffff"
-                    fontSize="13"
-                    fontWeight="bold"
-                    fontFamily="sans-serif"
-                    textAnchor="middle"
-                    pointerEvents="none"
-                  >
-                    {c.name.slice(0, 2).toUpperCase()}
-                  </text>
 
                   {/* Dodging condition shield indicator */}
                   {c.conditions.includes('dodging') && (
@@ -447,19 +491,30 @@ export const BattleMap: React.FC<BattleMapProps> = ({
                     fill={hpRatio > 0.5 ? '#10b981' : hpRatio > 0.25 ? '#f59e0b' : '#ef4444'}
                   />
 
-                  {/* Name Label */}
-                  <text
-                    x={cx}
-                    y={cy + 25}
-                    fill="#cbd5e1"
-                    fontSize="9"
-                    fontFamily="sans-serif"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    pointerEvents="none"
-                  >
-                    {c.name.split(' ')[0]} ({c.vitals.currentHp})
-                  </text>
+                  {/* Name Pill Badge below token */}
+                  <g pointerEvents="none">
+                    <rect
+                      x={cx - 26}
+                      y={cy + 22}
+                      width="52"
+                      height="12"
+                      rx="3"
+                      fill="rgba(15, 23, 42, 0.85)"
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      strokeWidth="0.5"
+                    />
+                    <text
+                      x={cx}
+                      y={cy + 31}
+                      fill="#e2e8f0"
+                      fontSize="8.5"
+                      fontFamily="sans-serif"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                    >
+                      {c.name.split(' ')[0]}
+                    </text>
+                  </g>
                 </g>
               );
             })}
