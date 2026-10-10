@@ -17,6 +17,7 @@ interface MapEditorToolbarProps {
   onSelectBrush: (brush: MapEditorBrush) => void;
   onClearCustomMap: () => void;
   onToggleEditMode: () => void;
+  onOpenExportImport: () => void;
 }
 
 export const MapEditorToolbar: React.FC<MapEditorToolbarProps> = ({
@@ -25,6 +26,7 @@ export const MapEditorToolbar: React.FC<MapEditorToolbarProps> = ({
   onSelectBrush,
   onClearCustomMap,
   onToggleEditMode,
+  onOpenExportImport,
 }) => {
   if (!isEditing) return null;
 
@@ -70,6 +72,13 @@ export const MapEditorToolbar: React.FC<MapEditorToolbarProps> = ({
 
       {/* Actions */}
       <div className="flex items-center gap-2">
+        <button
+          onClick={onOpenExportImport}
+          className="px-2.5 py-1 rounded-lg bg-indigo-950/50 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-700/60 font-semibold text-xs flex items-center gap-1 transition"
+          title="Export or Import custom battlemap JSON"
+        >
+          <Layers className="w-3.5 h-3.5" /> Save / Load Map
+        </button>
         <button
           onClick={onClearCustomMap}
           className="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800 text-xs flex items-center gap-1"

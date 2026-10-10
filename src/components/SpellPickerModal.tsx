@@ -32,8 +32,15 @@ export const SpellPickerModal: React.FC<SpellPickerModalProps> = ({
       id: `equipped-${spell.id}-${Date.now()}`,
       name: spell.name,
       cost: spell.castingTime.includes('Bonus') ? 'bonus' : spell.castingTime.includes('Reaction') ? 'reaction' : 'action',
-      type: spell.attackType === 'ranged_spell' ? 'spell_attack' : 'class_feature',
+      type: spell.attackType === 'save'
+        ? 'saving_throw_spell'
+        : spell.attackType === 'ranged_spell' || spell.attackType === 'melee_spell'
+        ? 'spell_attack'
+        : 'class_feature',
       toHitMod: 5,
+      saveType: spell.saveType,
+      saveDC: 13,
+      halfDamageOnSave: spell.halfDamageOnSave,
       damageFormula: spell.damageFormula,
       damageType: spell.damageType,
       rangeFt: spell.rangeFt,

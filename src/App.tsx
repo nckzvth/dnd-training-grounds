@@ -7,7 +7,8 @@ import {
   ReactionPrompt, 
   TelemetryRoundRecord, 
   CoverEvaluation,
-  GridCell
+  GridCell,
+  SavedMapData
 } from './types/combat';
 import { 
   PRESET_CHARACTERS, 
@@ -31,6 +32,7 @@ import { TabletopDiceTray, DiceTraySession } from './components/TabletopDiceTray
 import { RestModal } from './components/RestModal';
 import { SpellPickerModal } from './components/SpellPickerModal';
 import { MapEditorToolbar, MapEditorBrush } from './components/MapEditorToolbar';
+import { MapExportImportModal } from './components/MapExportImportModal';
 
 export function App() {
   // Current active encounter and player
@@ -70,6 +72,7 @@ export function App() {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isRestModalOpen, setIsRestModalOpen] = useState(false);
   const [isSpellPickerOpen, setIsSpellPickerOpen] = useState(false);
+  const [isMapExportImportOpen, setIsMapExportImportOpen] = useState(false);
 
   // Initialize encounter combatants
   const loadEncounter = (enc: EncounterPreset, customPlayer?: Combatant) => {
@@ -251,6 +254,102 @@ export function App() {
     );
   };
 
+  // Custom Battlemap Import
+  const handleImportMap = (imported: SavedMapData) => {
+    saveSnapshot();
+    setGridCells(imported.gridCells);
+    if (imported.combatants && imported.combatants.length > 0) {
+      const newCombatants: Combatant[] = imported.combatants.map((c) => {
+        if (c.isPlayer) {
+          return {
+            ...player,
+            spatial: { ...player.spatial, x: c.x, y: c.y },
+          };
+        }
+        return {
+          id: c.id || `combatant-${Date.now()}-${Math.random()}`,
+          name: c.name,
+          race: c.race,
+          archetype: c.archetype,
+          isPlayer: false,
+          isFriendly: c.isFriendly,
+          aiType: c.aiType || (c.isFriendly ? 'companion_tank' : 'melee_bruiser'),
+          vitals: {
+            maxHp: c.maxHp,
+            currentHp: c.currentHp,
+            tempHp: 0,
+            baseAc: c.baseAc,
+            speedFt: c.speedFt,
+            initiativeMod: 0,
+            hitDiceMax: 1,
+            hitDiceCurrent: 1,
+            hitDiceDie: 'd6',
+          },
+          attributes: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+          saves: [],
+          skills: {},
+          budget: {
+            movementTotalFt: c.speedFt,
+            movementRemainingFt: c.speedFt,
+            actionAvailable: true,
+            bonusActionAvailable: true,
+            reactionAvailable: true,
+            freeInteractionAvailable: true,
+          },
+          resources: [],
+          actionDeck: {
+            actions: c.actions || [{
+              id: `act-${Date.now()}`,
+              name: 'Attack',
+              cost: 'action',
+              type: 'melee_weapon',
+              toHitMod: 4,
+              damageFormula: '1d6+2',
+              damageType: 'slashing',
+              description: '+4 to hit',
+            }],
+            bonusActions: [],
+            reactions: [],
+            passives: [],
+          },
+          spatial: { x: c.x, y: c.y, elevationFt: 0, isHiding: false, hasCover: 'none' },
+          conditions: [],
+        };
+      });
+      setCombatants(newCombatants);
+    }
+    addLog({
+      actorName: 'System',
+      type: 'rule',
+      message: `Loaded custom battlemap: "${imported.name}" (${imported.gridWidth}x${imported.gridHeight}) with ${imported.combatants?.length || 0} tokens.`,
+    });
+  };
+
+  const currentMapData: SavedMapData = {
+    id: `map-${Date.now()}`,
+    name: activeEncounter.title,
+    savedAt: new Date().toISOString(),
+    gridWidth: activeEncounter.gridWidth,
+    gridHeight: activeEncounter.gridHeight,
+    gridCells,
+    combatants: combatants.map((c) => ({
+      id: c.id,
+      name: c.name,
+      race: c.race,
+      archetype: c.archetype,
+      isPlayer: c.isPlayer,
+      isFriendly: c.isFriendly,
+      aiType: c.aiType,
+      x: c.spatial.x,
+      y: c.spatial.y,
+      maxHp: c.vitals.maxHp,
+      currentHp: c.vitals.currentHp,
+      baseAc: c.vitals.baseAc,
+      speedFt: c.vitals.speedFt,
+      actions: c.actionDeck.actions,
+    })),
+  };
+
   // Movement handler
   const handleMovePlayer = (newX: number, newY: number, costFt: number) => {
     if (!isPlayerTurn) return;
@@ -398,11 +497,13 @@ export function App() {
           spatial: { ...player.spatial, isHiding: false },
         };
 
-        if (!hit) {
+        if (!hit && totalDamage === 0) {
           addLog({
             actorName: player.name,
             type: 'attack',
-            message: `${player.name} attacks ${target.name} with ${action.name} (Range: ${distFt} ft) -> MISS (Deflected by AC ${target.vitals.baseAc + cover.acBonus}).`,
+            message: action.saveType
+              ? `${player.name} casts ${action.name} on ${target.name} -> Target SUCCEEDED ${action.saveType.toUpperCase()} Saving Throw (0 damage).`
+              : `${player.name} attacks ${target.name} with ${action.name} (Range: ${distFt} ft) -> MISS (Deflected by AC ${target.vitals.baseAc + cover.acBonus}).`,
           });
           setPlayer(updatedPlayer);
           setCombatants((prev) => prev.map((c) => (c.id === player.id ? updatedPlayer : c)));
@@ -417,7 +518,9 @@ export function App() {
         addLog({
           actorName: player.name,
           type: 'damage',
-          message: `${player.name} hits ${target.name} with ${action.name} for ${totalDamage} damage! [${damageBreakdown}] (Target HP: ${newTargetHp}/${target.vitals.maxHp})`,
+          message: action.saveType
+            ? `${player.name} resolves ${action.name} against ${target.name} for ${totalDamage} damage! [${damageBreakdown}] (Target HP: ${newTargetHp}/${target.vitals.maxHp})`
+            : `${player.name} hits ${target.name} with ${action.name} for ${totalDamage} damage! [${damageBreakdown}] (Target HP: ${newTargetHp}/${target.vitals.maxHp})`,
         });
 
         // Update telemetry
@@ -669,6 +772,7 @@ export function App() {
         onSelectBrush={setActiveBrush}
         onClearCustomMap={() => setGridCells(JSON.parse(JSON.stringify(activeEncounter.gridCells)))}
         onToggleEditMode={() => setIsMapEditing(false)}
+        onOpenExportImport={() => setIsMapExportImportOpen(true)}
       />
 
       {/* Main Tactical Workspace */}
@@ -685,8 +789,8 @@ export function App() {
           />
         </div>
 
-        {/* Center / Right: Tactical Battlemap & Combat Ledger */}
-        <div className="flex flex-col gap-3 min-w-0 w-full">
+        {/* Center / Right: Tactical Battlemap, Embedded Tabletop Dice Tray & Combat Ledger */}
+        <div className="flex flex-col gap-4 min-w-0 w-full">
           {/* Battlemap Viewport */}
           <BattleMap
             gridWidth={activeEncounter.gridWidth}
@@ -702,13 +806,21 @@ export function App() {
             onCellPaint={handleCellPaint}
           />
 
+          {/* Embedded Tabletop Dice Tray (Permanent Main Window Centerpiece) */}
+          <TabletopDiceTray session={diceSession} />
+
           {/* Combat Log */}
           <CombatLog logs={logs} />
         </div>
       </main>
 
-      {/* Tabletop Dice Tray (Interactive Physical Dice Guide) */}
-      <TabletopDiceTray session={diceSession} />
+      {/* Battlemap Export & Import Modal */}
+      <MapExportImportModal
+        isOpen={isMapExportImportOpen}
+        onClose={() => setIsMapExportImportOpen(false)}
+        currentMapData={currentMapData}
+        onImportMap={handleImportMap}
+      />
 
       {/* Reactive Interceptor Modal */}
       <ReactionModal prompt={reactionPrompt} />

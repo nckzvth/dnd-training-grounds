@@ -15,6 +15,7 @@ export interface ActionItem {
   reachFt?: number;
   saveType?: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
   saveDC?: number;
+  halfDamageOnSave?: boolean;
   description: string;
   resourceCost?: {
     resourceId: string;
@@ -58,6 +59,9 @@ export interface Combatant {
     speedFt: number;
     initiativeMod: number;
     currentInitiative?: number;
+    hitDiceMax?: number;
+    hitDiceCurrent?: number;
+    hitDiceDie?: 'd6' | 'd8' | 'd10' | 'd12';
   };
 
   attributes: {
@@ -161,4 +165,30 @@ export interface TelemetryRoundRecord {
   damageDealt: number;
   damageTaken: number;
   overkillDamage: number;
+}
+
+export interface SavedMapData {
+  id: string;
+  name: string;
+  description?: string;
+  savedAt: string;
+  gridWidth: number;
+  gridHeight: number;
+  gridCells: GridCell[];
+  combatants: Array<{
+    id: string;
+    name: string;
+    race?: string;
+    archetype?: string;
+    isPlayer: boolean;
+    isFriendly: boolean;
+    aiType?: Combatant['aiType'];
+    x: number;
+    y: number;
+    maxHp: number;
+    currentHp: number;
+    baseAc: number;
+    speedFt: number;
+    actions?: ActionItem[];
+  }>;
 }

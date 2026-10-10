@@ -166,6 +166,61 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Hit Dice & Spellcasting Metrics */}
+        <div className="mt-2.5 pt-2 border-t border-slate-800 space-y-1.5">
+          {/* Hit Dice Tracker */}
+          <div className="flex items-center justify-between text-xs bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-slate-800">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase">Hit Dice:</span>
+              <span className="font-mono font-bold text-amber-400">
+                {(player.vitals.hitDiceCurrent ?? player.vitals.hitDiceMax ?? 3)}/{(player.vitals.hitDiceMax ?? 3)} {(player.vitals.hitDiceDie ?? 'd8')}
+              </span>
+              <div className="flex items-center gap-1 ml-1.5">
+                {Array.from({ length: (player.vitals.hitDiceMax ?? 3) }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`w-2 h-2 rounded-full ${
+                      i < (player.vitals.hitDiceCurrent ?? player.vitals.hitDiceMax ?? 3)
+                        ? 'bg-amber-400 shadow-sm shadow-amber-400/50'
+                        : 'bg-slate-800 border border-slate-700'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={onOpenRestModal}
+              className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold underline"
+            >
+              Short/Long Rest
+            </button>
+          </div>
+
+          {/* Spell Save DC & Attack Mod */}
+          <div className="grid grid-cols-2 gap-1.5 text-center text-xs">
+            <div className="bg-slate-900/60 px-2 py-1 rounded-md border border-slate-800">
+              <span className="text-[9px] text-slate-400 uppercase font-semibold block">Spell Save DC</span>
+              <span className="font-mono font-bold text-indigo-300 text-xs">
+                DC {8 + 2 + Math.max(
+                  Math.floor((player.attributes.int - 10) / 2),
+                  Math.floor((player.attributes.wis - 10) / 2),
+                  Math.floor((player.attributes.cha - 10) / 2)
+                )}
+              </span>
+            </div>
+            <div className="bg-slate-900/60 px-2 py-1 rounded-md border border-slate-800">
+              <span className="text-[9px] text-slate-400 uppercase font-semibold block">Spell Attack</span>
+              <span className="font-mono font-bold text-indigo-300 text-xs">
+                +{2 + Math.max(
+                  Math.floor((player.attributes.int - 10) / 2),
+                  Math.floor((player.attributes.wis - 10) / 2),
+                  Math.floor((player.attributes.cha - 10) / 2)
+                )} to hit
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Action Economy Ledger */}
