@@ -6,14 +6,15 @@ import {
   CombatLogEntry, 
   ReactionPrompt, 
   TelemetryRoundRecord, 
-  CoverEvaluation 
+  CoverEvaluation,
+  GridCell
 } from './types/combat';
 import { 
   PRESET_CHARACTERS, 
   PRESET_ENCOUNTERS, 
   EncounterPreset 
 } from './data/presetEncounters';
-import { rollD20, rollDice, doubleDiceFormulaForCrit } from './utils/dice';
+import { rollD20, rollDice } from './utils/dice';
 import { evaluateCover, calculateDistanceFt } from './utils/raycastCover';
 import { findPath } from './utils/pathfinding';
 
@@ -26,12 +27,17 @@ import { CharacterImportModal } from './components/CharacterImportModal';
 import { ScenarioModal } from './components/ScenarioModal';
 import { TelemetryModal } from './components/TelemetryModal';
 import { HelpModal } from './components/HelpModal';
+import { TabletopDiceTray, DiceTraySession } from './components/TabletopDiceTray';
+import { RestModal } from './components/RestModal';
+import { SpellPickerModal } from './components/SpellPickerModal';
+import { MapEditorToolbar, MapEditorBrush } from './components/MapEditorToolbar';
 
 export function App() {
   // Current active encounter and player
-  const [activeEncounter, setActiveEncounter] = useState<EncounterPreset>(PRESET_ENCOUNTERS[1]); // Alley Ambush default
+  const [activeEncounter, setActiveEncounter] = useState<EncounterPreset>(PRESET_ENCOUNTERS[0]); // Open World Sandbox default
   const [player, setPlayer] = useState<Combatant>(JSON.parse(JSON.stringify(PRESET_CHARACTERS.arty)));
   const [combatants, setCombatants] = useState<Combatant[]>([]);
+  const [gridCells, setGridCells] = useState<GridCell[]>([]);
 
   // Turn management
   const [currentRound, setCurrentRound] = useState(1);
@@ -39,11 +45,19 @@ export function App() {
   const [selectedAction, setSelectedAction] = useState<ActionItem | null>(null);
   const [reactionPrompt, setReactionPrompt] = useState<ReactionPrompt | null>(null);
 
+  // Tabletop Dice Tray Session (No Auto-Roll!)
+  const [diceSession, setDiceSession] = useState<DiceTraySession | null>(null);
+
+  // Map Sandbox Editor
+  const [isMapEditing, setIsMapEditing] = useState(false);
+  const [activeBrush, setActiveBrush] = useState<MapEditorBrush>('half_cover');
+
   // Logs & History & Telemetry
   const [logs, setLogs] = useState<CombatLogEntry[]>([]);
   const [turnHistory, setTurnHistory] = useState<Array<{
     player: Combatant;
     combatants: Combatant[];
+    gridCells: GridCell[];
     round: number;
     logs: CombatLogEntry[];
   }>>([]);
@@ -54,6 +68,8 @@ export function App() {
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
   const [isTelemetryModalOpen, setIsTelemetryModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isRestModalOpen, setIsRestModalOpen] = useState(false);
+  const [isSpellPickerOpen, setIsSpellPickerOpen] = useState(false);
 
   // Initialize encounter combatants
   const loadEncounter = (enc: EncounterPreset, customPlayer?: Combatant) => {
@@ -73,12 +89,15 @@ export function App() {
     ];
 
     setActiveEncounter(enc);
+    setGridCells(JSON.parse(JSON.stringify(enc.gridCells)));
     setPlayer(pc);
     setCombatants(activeList);
     setCurrentRound(1);
     setIsPlayerTurn(true);
     setSelectedAction(null);
     setReactionPrompt(null);
+    setDiceSession(null);
+    setIsMapEditing(false);
     setTurnHistory([]);
     setTelemetryHistory([]);
 
@@ -115,6 +134,7 @@ export function App() {
       {
         player: JSON.parse(JSON.stringify(player)),
         combatants: JSON.parse(JSON.stringify(combatants)),
+        gridCells: JSON.parse(JSON.stringify(gridCells)),
         round: currentRound,
         logs: [...logs],
       },
@@ -128,17 +148,107 @@ export function App() {
 
     setPlayer(lastSnapshot.player);
     setCombatants(lastSnapshot.combatants);
+    setGridCells(lastSnapshot.gridCells);
     setCurrentRound(lastSnapshot.round);
     setLogs(lastSnapshot.logs);
     setIsPlayerTurn(true);
     setSelectedAction(null);
     setReactionPrompt(null);
+    setDiceSession(null);
 
     addLog({
       actorName: 'System',
       type: 'rule',
       message: `State rewind executed! Restored board and action budget to start of Round ${lastSnapshot.round}.`,
     });
+  };
+
+  // Map Editor Paint
+  const handleCellPaint = (x: number, y: number, brush: MapEditorBrush) => {
+    saveSnapshot();
+
+    if (brush === 'spawn_dummy') {
+      const dummy: Combatant = {
+        id: `dummy-${Date.now()}`,
+        name: `Dummy (${combatants.length + 1})`,
+        isPlayer: false,
+        isFriendly: false,
+        aiType: 'static_dummy',
+        vitals: { maxHp: 50, currentHp: 50, tempHp: 0, baseAc: 14, speedFt: 0, initiativeMod: 0 },
+        attributes: { str: 10, dex: 10, con: 20, int: 1, wis: 1, cha: 1 },
+        saves: [],
+        skills: {},
+        budget: { movementTotalFt: 0, movementRemainingFt: 0, actionAvailable: false, bonusActionAvailable: false, reactionAvailable: false, freeInteractionAvailable: false },
+        resources: [],
+        actionDeck: { actions: [], bonusActions: [], reactions: [], passives: [] },
+        spatial: { x, y, elevationFt: 0, isHiding: false, hasCover: 'none' },
+        conditions: [],
+      };
+      setCombatants((prev) => [...prev, dummy]);
+      addLog({ actorName: 'Editor', type: 'rule', message: `Spawned Training Target Dummy at (${x}, ${y}).` });
+      return;
+    }
+
+    if (brush === 'spawn_goblin') {
+      const gob: Combatant = {
+        id: `goblin-${Date.now()}`,
+        name: `Goblin Raider (${combatants.length + 1})`,
+        race: 'Goblin',
+        isPlayer: false,
+        isFriendly: false,
+        aiType: 'melee_bruiser',
+        vitals: { maxHp: 12, currentHp: 12, tempHp: 0, baseAc: 14, speedFt: 30, initiativeMod: 2 },
+        attributes: { str: 8, dex: 14, con: 12, int: 10, wis: 8, cha: 8 },
+        saves: ['dex'],
+        skills: {},
+        budget: { movementTotalFt: 30, movementRemainingFt: 30, actionAvailable: true, bonusActionAvailable: true, reactionAvailable: true, freeInteractionAvailable: true },
+        resources: [],
+        actionDeck: {
+          actions: [{ id: `gob-scim-${Date.now()}`, name: 'Scimitar', cost: 'action', type: 'melee_weapon', toHitMod: 4, damageFormula: '1d6+2', damageType: 'slashing', reachFt: 5, description: '+4 to hit' }],
+          bonusActions: [],
+          reactions: [],
+          passives: [],
+        },
+        spatial: { x, y, elevationFt: 0, isHiding: false, hasCover: 'none' },
+        conditions: [],
+      };
+      setCombatants((prev) => [...prev, gob]);
+      addLog({ actorName: 'Editor', type: 'rule', message: `Spawned Goblin Raider at (${x}, ${y}).` });
+      return;
+    }
+
+    if (brush === 'spawn_ally') {
+      const ally: Combatant = {
+        id: `ally-${Date.now()}`,
+        name: 'Allied Guard',
+        race: 'Human',
+        isPlayer: false,
+        isFriendly: true,
+        aiType: 'companion_tank',
+        vitals: { maxHp: 25, currentHp: 25, tempHp: 0, baseAc: 16, speedFt: 30, initiativeMod: 1 },
+        attributes: { str: 14, dex: 12, con: 14, int: 10, wis: 10, cha: 10 },
+        saves: ['str'],
+        skills: {},
+        budget: { movementTotalFt: 30, movementRemainingFt: 30, actionAvailable: true, bonusActionAvailable: true, reactionAvailable: true, freeInteractionAvailable: true },
+        resources: [],
+        actionDeck: {
+          actions: [{ id: `guard-spear-${Date.now()}`, name: 'Spear', cost: 'action', type: 'melee_weapon', toHitMod: 4, damageFormula: '1d6+2', damageType: 'piercing', reachFt: 5, description: '+4 to hit' }],
+          bonusActions: [],
+          reactions: [],
+          passives: [],
+        },
+        spatial: { x, y, elevationFt: 0, isHiding: false, hasCover: 'none' },
+        conditions: ['dodging'],
+      };
+      setCombatants((prev) => [...prev, ally]);
+      addLog({ actorName: 'Editor', type: 'rule', message: `Spawned Allied Companion Guard at (${x}, ${y}).` });
+      return;
+    }
+
+    // Paint cell terrain
+    setGridCells((prev) =>
+      prev.map((c) => (c.x === x && c.y === y ? { ...c, type: brush as any } : c))
+    );
   };
 
   // Movement handler
@@ -154,7 +264,6 @@ export function App() {
         ...player.spatial,
         x: newX,
         y: newY,
-        // If moving out in the open, break stealth
         isHiding: player.spatial.isHiding ? false : false,
       },
       budget: {
@@ -173,7 +282,7 @@ export function App() {
     });
   };
 
-  // Execute utility actions (Dash, Dodge, Cunning Actions, Steady Aim)
+  // Execute utility actions
   const handleExecuteUtilityAction = (action: ActionItem) => {
     if (!isPlayerTurn) return;
     saveSnapshot();
@@ -196,24 +305,23 @@ export function App() {
         type: 'action',
         message: `${player.name} takes the Dodge action! Attack rolls against them have Disadvantage until next turn.`,
       });
-    } else if (action.id === 'cunning-dash' && player.budget.bonusActionAvailable) {
+    } else if (action.id.includes('dash') && player.budget.bonusActionAvailable) {
       updatedPlayer.budget.bonusActionAvailable = false;
       updatedPlayer.budget.movementRemainingFt += player.vitals.speedFt;
       addLog({
         actorName: player.name,
         type: 'action',
-        message: `${player.name} uses Cunning Action (Bonus Action) to Dash! Added +${player.vitals.speedFt} ft movement.`,
+        message: `${player.name} uses Cunning Action Dash! Added +${player.vitals.speedFt} ft movement.`,
       });
-    } else if (action.id === 'cunning-disengage' && player.budget.bonusActionAvailable) {
+    } else if (action.id.includes('disengage') && player.budget.bonusActionAvailable) {
       updatedPlayer.budget.bonusActionAvailable = false;
       addLog({
         actorName: player.name,
         type: 'action',
-        message: `${player.name} uses Cunning Action to Disengage! Movement will not provoke Opportunity Attacks this turn.`,
+        message: `${player.name} uses Cunning Action Disengage! Movement will not provoke Opportunity Attacks this turn.`,
       });
-    } else if (action.id === 'cunning-hide' && player.budget.bonusActionAvailable) {
+    } else if (action.id.includes('hide') && player.budget.bonusActionAvailable) {
       updatedPlayer.budget.bonusActionAvailable = false;
-      // Stealth check
       const stealthRoll = rollD20(player.skills.stealth || 6);
       const enemyPassivePerception = 11;
       const success = stealthRoll.total >= enemyPassivePerception;
@@ -235,32 +343,19 @@ export function App() {
     } else if (action.id === 'steady-aim' && player.budget.bonusActionAvailable) {
       updatedPlayer.budget.bonusActionAvailable = false;
       updatedPlayer.budget.movementRemainingFt = 0;
-      updatedPlayer.spatial.isHiding = true; // Simulates next attack advantage
+      updatedPlayer.spatial.isHiding = true;
       addLog({
         actorName: player.name,
         type: 'action',
-        message: `${player.name} executes Steady Aim (Tasha's Cauldron)! Advantage granted on next attack roll this turn; remaining movement reduced to 0 ft.`,
+        message: `${player.name} executes Steady Aim! Advantage granted on next attack roll this turn; remaining movement reduced to 0 ft.`,
       });
-    } else if (action.id === 'valeros-second-wind' && player.budget.bonusActionAvailable) {
-      const res = updatedPlayer.resources.find((r) => r.id === 'second_wind');
-      if (res && res.current > 0) {
-        res.current -= 1;
-        updatedPlayer.budget.bonusActionAvailable = false;
-        const heal = rollDice('1d10+3').total;
-        updatedPlayer.vitals.currentHp = Math.min(updatedPlayer.vitals.maxHp, updatedPlayer.vitals.currentHp + heal);
-        addLog({
-          actorName: player.name,
-          type: 'heal',
-          message: `${player.name} uses Second Wind! Regained ${heal} HP (Current: ${updatedPlayer.vitals.currentHp}/${updatedPlayer.vitals.maxHp}).`,
-        });
-      }
     }
 
     setPlayer(updatedPlayer);
     setCombatants((prev) => prev.map((c) => (c.id === player.id ? updatedPlayer : c)));
   };
 
-  // Targeting & Attack Resolution
+  // Targeting: Opens Tabletop Dice Tray (NO AUTO-ROLL!)
   const handleTargetCombatant = (target: Combatant, action: ActionItem, cover: CoverEvaluation) => {
     if (!isPlayerTurn || !player.budget.actionAvailable) return;
     saveSnapshot();
@@ -290,166 +385,120 @@ export function App() {
       return;
     }
 
-    // Determine advantage / disadvantage
-    let advState: 'normal' | 'advantage' | 'disadvantage' = 'normal';
-    if (player.spatial.isHiding) advState = 'advantage';
-    if (distFt > normalRange) advState = 'disadvantage';
-    if (target.conditions.includes('dodging')) advState = 'disadvantage';
+    // OPEN THE GUIDED TABLETOP DICE TRAY!
+    setDiceSession({
+      attacker: player,
+      target,
+      action,
+      cover,
+      onComplete: (hit, totalDamage, damageBreakdown, isCrit) => {
+        let updatedPlayer = {
+          ...player,
+          budget: { ...player.budget, actionAvailable: false },
+          spatial: { ...player.spatial, isHiding: false },
+        };
 
-    // Target Effective AC
-    const effectiveAc = target.vitals.baseAc + cover.acBonus;
+        if (!hit) {
+          addLog({
+            actorName: player.name,
+            type: 'attack',
+            message: `${player.name} attacks ${target.name} with ${action.name} (Range: ${distFt} ft) -> MISS (Deflected by AC ${target.vitals.baseAc + cover.acBonus}).`,
+          });
+          setPlayer(updatedPlayer);
+          setCombatants((prev) => prev.map((c) => (c.id === player.id ? updatedPlayer : c)));
+          setDiceSession(null);
+          return;
+        }
 
-    // Roll attack
-    const atkResult = rollD20(action.toHitMod || 0, advState);
-    const isHit = (atkResult.total >= effectiveAc || atkResult.isCrit) && !atkResult.isFumble;
+        // Apply Damage
+        const newTargetHp = Math.max(0, target.vitals.currentHp - totalDamage);
+        const overkill = target.vitals.currentHp < totalDamage ? totalDamage - target.vitals.currentHp : 0;
 
+        addLog({
+          actorName: player.name,
+          type: 'damage',
+          message: `${player.name} hits ${target.name} with ${action.name} for ${totalDamage} damage! [${damageBreakdown}] (Target HP: ${newTargetHp}/${target.vitals.maxHp})`,
+        });
+
+        // Update telemetry
+        setTelemetryHistory((prev) => [
+          ...prev,
+          {
+            round: currentRound,
+            unusedBonusAction: false,
+            unusedReaction: false,
+            unspentMovementFt: updatedPlayer.budget.movementRemainingFt,
+            endedInOpenLoS: cover.cover === 'none',
+            resourcesSpent: 1,
+            damageDealt: totalDamage,
+            damageTaken: 0,
+            overkillDamage: overkill,
+          },
+        ]);
+
+        const updatedTarget: Combatant = {
+          ...target,
+          vitals: { ...target.vitals, currentHp: newTargetHp },
+        };
+
+        setPlayer(updatedPlayer);
+        setCombatants((prev) =>
+          prev.map((c) => (c.id === player.id ? updatedPlayer : c.id === target.id ? updatedTarget : c))
+        );
+
+        setDiceSession(null);
+
+        // Check victory
+        const allEnemiesDead = combatants
+          .filter((c) => !c.isFriendly)
+          .every((c) => (c.id === target.id ? newTargetHp === 0 : c.vitals.currentHp === 0));
+
+        if (allEnemiesDead) {
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+          addLog({
+            actorName: 'System',
+            type: 'rule',
+            message: `Victory! All hostiles defeated in Round ${currentRound}. Take a Short Rest or review Telemetry!`,
+          });
+        }
+      },
+      onCancel: () => setDiceSession(null),
+    });
+  };
+
+  // Rest handler
+  const handleApplyRest = (updatedPlayer: Combatant, restType: 'short' | 'long') => {
+    setPlayer(updatedPlayer);
+    setCombatants((prev) => prev.map((c) => (c.id === updatedPlayer.id ? updatedPlayer : c)));
+    addLog({
+      actorName: updatedPlayer.name,
+      type: 'heal',
+      message: `${updatedPlayer.name} completed a ${restType === 'short' ? 'Short Rest' : 'Long Rest'}! Hit points and action resources refreshed.`,
+    });
+  };
+
+  // Add spell to deck
+  const handleAddSpellToActionDeck = (actionItem: ActionItem) => {
+    const updated = {
+      ...player,
+      actionDeck: {
+        ...player.actionDeck,
+        actions: [...player.actionDeck.actions, actionItem],
+      },
+    };
+    setPlayer(updated);
+    setCombatants((prev) => prev.map((c) => (c.id === player.id ? updated : c)));
     addLog({
       actorName: player.name,
-      type: 'attack',
-      message: `${player.name} attacks ${target.name} with ${action.name} (Range: ${distFt} ft). Cover: ${cover.cover.toUpperCase()} (+${cover.acBonus} AC).`,
-      details: {
-        d20Roll: atkResult.d20,
-        modifier: atkResult.modifier,
-        totalToHit: atkResult.total,
-        targetAc: effectiveAc,
-        coverBonusApplied: cover.acBonus,
-        isHit,
-        isCrit: atkResult.isCrit,
-      },
+      type: 'rule',
+      message: `Equipped new spell/action "${actionItem.name}" to combat deck!`,
     });
-
-    // Deduct player Action
-    let updatedPlayer = {
-      ...player,
-      budget: { ...player.budget, actionAvailable: false },
-      spatial: { ...player.spatial, isHiding: false }, // Attacking reveals position
-    };
-
-    if (!isHit) {
-      setPlayer(updatedPlayer);
-      setCombatants((prev) => prev.map((c) => (c.id === player.id ? updatedPlayer : c)));
-      return;
-    }
-
-    // Check Sneak Attack qualification:
-    // Qualified if player has Advantage OR an ally is within 5ft of the target
-    const allyAdjacent = combatants.some(
-      (c) => c.isFriendly && c.id !== target.id && c.id !== player.id &&
-             Math.max(Math.abs(c.spatial.x - target.spatial.x), Math.abs(c.spatial.y - target.spatial.y)) <= 1
-    );
-    const sneakQualified = (advState === 'advantage' || allyAdjacent) && action.riders?.includes('sneak_attack');
-    const sneakResource = updatedPlayer.resources.find((r) => r.id === 'sneak_attack');
-
-    const finalizeDamage = (applySneak: boolean) => {
-      let formula = action.damageFormula || '1d8+4';
-      if (atkResult.isCrit) {
-        formula = doubleDiceFormulaForCrit(formula);
-      }
-
-      let dmgResult = rollDice(formula);
-      let totalDmg = dmgResult.total;
-      let breakdown = `${dmgResult.individualRolls.join('+')} + ${dmgResult.modifier}`;
-
-      if (applySneak) {
-        const sneakFormula = atkResult.isCrit ? '4d6' : '2d6';
-        const sneakRoll = rollDice(sneakFormula);
-        totalDmg += sneakRoll.total;
-        breakdown += ` + Sneak Attack (${sneakRoll.individualRolls.join('+')})`;
-
-        if (sneakResource) sneakResource.current = 0; // Expended for turn
-      }
-
-      // Apply damage to target
-      const newTargetHp = Math.max(0, target.vitals.currentHp - totalDmg);
-      const overkill = target.vitals.currentHp < totalDmg ? totalDmg - target.vitals.currentHp : 0;
-
-      addLog({
-        actorName: player.name,
-        type: 'damage',
-        message: `${player.name} hits ${target.name} for ${totalDmg} ${action.damageType || 'damage'}! (Target HP: ${newTargetHp}/${target.vitals.maxHp})`,
-        details: {
-          damageRolls: breakdown,
-          damageTotal: totalDmg,
-          damageType: action.damageType,
-        },
-      });
-
-      // Update telemetry
-      setTelemetryHistory((prev) => [
-        ...prev,
-        {
-          round: currentRound,
-          unusedBonusAction: false,
-          unusedReaction: false,
-          unspentMovementFt: updatedPlayer.budget.movementRemainingFt,
-          endedInOpenLoS: cover.cover === 'none',
-          resourcesSpent: applySneak ? 1 : 0,
-          damageDealt: totalDmg,
-          damageTaken: 0,
-          overkillDamage: overkill,
-        },
-      ]);
-
-      const updatedTarget: Combatant = {
-        ...target,
-        vitals: { ...target.vitals, currentHp: newTargetHp },
-      };
-
-      setPlayer(updatedPlayer);
-      setCombatants((prev) =>
-        prev.map((c) => (c.id === player.id ? updatedPlayer : c.id === target.id ? updatedTarget : c))
-      );
-
-      // Check victory
-      const allEnemiesDead = combatants
-        .filter((c) => !c.isFriendly)
-        .every((c) => (c.id === target.id ? newTargetHp === 0 : c.vitals.currentHp === 0));
-
-      if (allEnemiesDead) {
-        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-        addLog({
-          actorName: 'System',
-          type: 'rule',
-          message: `Victory! All hostiles defeated in Round ${currentRound}. Open Telemetry to review your Action Budget Report Card!`,
-        });
-      }
-    };
-
-    if (sneakQualified && sneakResource && sneakResource.current > 0) {
-      // INTERCEPTOR MODAL PROMPT!
-      setReactionPrompt({
-        id: 'prompt-sneak-attack',
-        title: 'Sneak Attack Trigger Validated!',
-        description: `Target ${target.name} is qualified for Sneak Attack (${
-          advState === 'advantage' ? 'Attacker had Advantage' : 'Ally is within 5 ft of enemy'
-        }). Spend your once-per-turn Sneak Attack (+2d6 damage)?`,
-        combatantId: player.id,
-        actionItem: action,
-        options: [
-          {
-            label: 'Apply Sneak Attack (+2d6)',
-            primary: true,
-            onExecute: () => {
-              setReactionPrompt(null);
-              finalizeDamage(true);
-            },
-          },
-        ],
-        onCancel: () => {
-          setReactionPrompt(null);
-          finalizeDamage(false);
-        },
-      });
-    } else {
-      finalizeDamage(false);
-    }
   };
 
   // End Turn & Opponent AI Phase
   const handleEndTurn = () => {
     if (!isPlayerTurn) return;
 
-    // Record telemetry for unspent actions
     setTelemetryHistory((prev) => [
       ...prev,
       {
@@ -472,7 +521,6 @@ export function App() {
       message: `--- End of Player Turn (Round ${currentRound}). Beginning Hostile AI Phase ---`,
     });
 
-    // Run AI turns with small tactical timeouts
     setTimeout(() => {
       runOpponentTurns();
     }, 400);
@@ -487,38 +535,34 @@ export function App() {
     enemies.forEach((enemy) => {
       if (enemy.aiType === 'static_dummy') return;
 
-      // Find path towards player
       const distToPlayer = calculateDistanceFt(enemy.spatial.x, enemy.spatial.y, currentPlayer.spatial.x, currentPlayer.spatial.y);
 
       // Melee Bruiser AI
       if (enemy.aiType === 'melee_bruiser') {
         if (distToPlayer > 5) {
-          // Move towards player
           const path = findPath(
             enemy.spatial.x,
             enemy.spatial.y,
             currentPlayer.spatial.x,
             currentPlayer.spatial.y,
-            activeEncounter.gridCells,
+            gridCells,
             activeEncounter.gridWidth,
             activeEncounter.gridHeight,
             new Set()
           );
 
           if (path && path.length > 1) {
-            // Step closer (up to 30 ft = 6 tiles)
             const targetStep = path[Math.min(path.length - 2, 5)];
             enemy.spatial.x = targetStep.x;
             enemy.spatial.y = targetStep.y;
             addLog({
               actorName: enemy.name,
               type: 'action',
-              message: `${enemy.name} charges forward across the grid to (${targetStep.x}, ${targetStep.y}).`,
+              message: `${enemy.name} advances across grid to (${targetStep.x}, ${targetStep.y}).`,
             });
           }
         }
 
-        // If now in melee range (5 ft), attack player!
         const newDist = calculateDistanceFt(enemy.spatial.x, enemy.spatial.y, currentPlayer.spatial.x, currentPlayer.spatial.y);
         if (newDist <= 5) {
           const atk = enemy.actionDeck.actions[0];
@@ -529,14 +573,7 @@ export function App() {
           addLog({
             actorName: enemy.name,
             type: 'attack',
-            message: `${enemy.name} attacks ${currentPlayer.name} with ${atk.name}!`,
-            details: {
-              d20Roll: atkRoll.d20,
-              modifier: atkRoll.modifier,
-              totalToHit: atkRoll.total,
-              targetAc: effectiveAc,
-              isHit,
-            },
+            message: `${enemy.name} attacks ${currentPlayer.name} with ${atk.name}! [d20(${atkRoll.d20}) + ${atkRoll.modifier} = ${atkRoll.total} vs AC ${effectiveAc}] -> ${isHit ? 'HIT!' : 'MISS!'}`,
           });
 
           if (isHit) {
@@ -547,7 +584,7 @@ export function App() {
             addLog({
               actorName: enemy.name,
               type: 'damage',
-              message: `${enemy.name} hits ${currentPlayer.name} for ${totalDmg} damage! (${currentPlayer.vitals.currentHp}/${currentPlayer.vitals.maxHp} HP)`,
+              message: `${enemy.name} deals ${totalDmg} damage to ${currentPlayer.name}! (${currentPlayer.vitals.currentHp}/${currentPlayer.vitals.maxHp} HP)`,
             });
           }
         }
@@ -555,7 +592,7 @@ export function App() {
 
       // Ranged Skirmisher AI
       if (enemy.aiType === 'ranged_skirmisher') {
-        const cover = evaluateCover(enemy.spatial.x, enemy.spatial.y, currentPlayer.spatial.x, currentPlayer.spatial.y, activeEncounter.gridCells);
+        const cover = evaluateCover(enemy.spatial.x, enemy.spatial.y, currentPlayer.spatial.x, currentPlayer.spatial.y, gridCells);
         const atk = enemy.actionDeck.actions[0];
         const atkRoll = rollD20(atk.toHitMod || 4);
         const effectiveAc = currentPlayer.vitals.baseAc + cover.acBonus;
@@ -564,15 +601,7 @@ export function App() {
         addLog({
           actorName: enemy.name,
           type: 'attack',
-          message: `${enemy.name} fires ${atk.name} at ${currentPlayer.name} from behind cover!`,
-          details: {
-            d20Roll: atkRoll.d20,
-            modifier: atkRoll.modifier,
-            totalToHit: atkRoll.total,
-            targetAc: effectiveAc,
-            coverBonusApplied: cover.acBonus,
-            isHit,
-          },
+          message: `${enemy.name} fires ${atk.name} at ${currentPlayer.name}! [d20(${atkRoll.d20}) + ${atkRoll.modifier} = ${atkRoll.total} vs AC ${effectiveAc} (+${cover.acBonus} Cover)] -> ${isHit ? 'HIT!' : 'MISS!'}`,
         });
 
         if (isHit) {
@@ -583,7 +612,7 @@ export function App() {
           addLog({
             actorName: enemy.name,
             type: 'damage',
-            message: `${enemy.name} pierces ${currentPlayer.name} for ${totalDmg} damage! (${currentPlayer.vitals.currentHp}/${currentPlayer.vitals.maxHp} HP)`,
+            message: `${enemy.name} deals ${totalDmg} piercing damage to ${currentPlayer.name}! (${currentPlayer.vitals.currentHp}/${currentPlayer.vitals.maxHp} HP)`,
           });
         }
       }
@@ -594,14 +623,12 @@ export function App() {
     setCurrentRound(nextRound);
     setIsPlayerTurn(true);
 
-    // Refresh player turn budget
     currentPlayer.budget.movementRemainingFt = currentPlayer.vitals.speedFt;
     currentPlayer.budget.actionAvailable = true;
     currentPlayer.budget.bonusActionAvailable = true;
     currentPlayer.budget.reactionAvailable = true;
     currentPlayer.conditions = currentPlayer.conditions.filter((c) => c !== 'dodging');
 
-    // Refresh Sneak Attack once/turn
     const sneakRes = currentPlayer.resources.find((r) => r.id === 'sneak_attack');
     if (sneakRes) sneakRes.current = 1;
 
@@ -631,10 +658,21 @@ export function App() {
         onRewindTurn={handleRewindTurn}
         canRewind={turnHistory.length > 0}
         isPlayerTurn={isPlayerTurn}
+        onToggleMapEditor={() => setIsMapEditing(!isMapEditing)}
+        isMapEditing={isMapEditing}
+      />
+
+      {/* Map Sandbox Editor Toolbar (Conditional) */}
+      <MapEditorToolbar
+        isEditing={isMapEditing}
+        activeBrush={activeBrush}
+        onSelectBrush={setActiveBrush}
+        onClearCustomMap={() => setGridCells(JSON.parse(JSON.stringify(activeEncounter.gridCells)))}
+        onToggleEditMode={() => setIsMapEditing(false)}
       />
 
       {/* Main Tactical Workspace */}
-      <main className="flex-1 p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr] gap-4 max-w-[1600px] w-full mx-auto items-start">
+      <main className="flex-1 p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-[310px_1fr] xl:grid-cols-[350px_1fr] gap-4 max-w-[1600px] w-full mx-auto items-start">
         {/* Left: Character Sheet & Action Deck */}
         <div className="w-full shrink-0">
           <CharacterSidebar
@@ -642,6 +680,8 @@ export function App() {
             selectedAction={selectedAction}
             onSelectAction={setSelectedAction}
             onExecuteUtilityAction={handleExecuteUtilityAction}
+            onOpenRestModal={() => setIsRestModalOpen(true)}
+            onOpenSpellPicker={() => setIsSpellPickerOpen(true)}
           />
         </div>
 
@@ -651,12 +691,15 @@ export function App() {
           <BattleMap
             gridWidth={activeEncounter.gridWidth}
             gridHeight={activeEncounter.gridHeight}
-            gridCells={activeEncounter.gridCells}
+            gridCells={gridCells}
             combatants={combatants}
             player={player}
             selectedAction={selectedAction}
             onMovePlayer={handleMovePlayer}
             onTargetCombatant={handleTargetCombatant}
+            isEditingMap={isMapEditing}
+            activeBrush={activeBrush}
+            onCellPaint={handleCellPaint}
           />
 
           {/* Combat Log */}
@@ -664,10 +707,28 @@ export function App() {
         </div>
       </main>
 
+      {/* Tabletop Dice Tray (Interactive Physical Dice Guide) */}
+      <TabletopDiceTray session={diceSession} />
+
       {/* Reactive Interceptor Modal */}
       <ReactionModal prompt={reactionPrompt} />
 
-      {/* Modals */}
+      {/* Short & Long Rest Recovery Modal */}
+      <RestModal
+        isOpen={isRestModalOpen}
+        onClose={() => setIsRestModalOpen(false)}
+        player={player}
+        onApplyRest={handleApplyRest}
+      />
+
+      {/* 5e SRD Spell & Cantrip Compendium Modal */}
+      <SpellPickerModal
+        isOpen={isSpellPickerOpen}
+        onClose={() => setIsSpellPickerOpen(false)}
+        onAddSpellToActionDeck={handleAddSpellToActionDeck}
+      />
+
+      {/* Character Hub Modal (PDF, Fight Club XML, Manual) */}
       <CharacterImportModal
         isOpen={isCharModalOpen}
         onClose={() => setIsCharModalOpen(false)}
@@ -675,6 +736,7 @@ export function App() {
         activeCharacterId={player.id}
       />
 
+      {/* Practice Maps & Scenarios Modal */}
       <ScenarioModal
         isOpen={isScenarioModalOpen}
         onClose={() => setIsScenarioModalOpen(false)}
@@ -682,6 +744,7 @@ export function App() {
         onSelectEncounter={(enc) => loadEncounter(enc)}
       />
 
+      {/* Tactical Diagnostics Telemetry Modal */}
       <TelemetryModal
         isOpen={isTelemetryModalOpen}
         onClose={() => setIsTelemetryModalOpen(false)}
@@ -689,6 +752,7 @@ export function App() {
         characterArchetype={player.archetype}
       />
 
+      {/* 5e Rules Reference Guide Modal */}
       <HelpModal
         isOpen={isHelpModalOpen}
         onClose={() => setIsHelpModalOpen(false)}

@@ -7,7 +7,8 @@ import {
   UserCheck, 
   Swords, 
   MapPin,
-  HelpCircle
+  HelpCircle,
+  Wrench
 } from 'lucide-react';
 import { EncounterPreset } from '../data/presetEncounters';
 
@@ -22,6 +23,8 @@ interface NavbarProps {
   onRewindTurn: () => void;
   canRewind: boolean;
   isPlayerTurn: boolean;
+  onToggleMapEditor: () => void;
+  isMapEditing: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,6 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onRewindTurn,
   canRewind,
   isPlayerTurn,
+  onToggleMapEditor,
+  isMapEditing,
 }) => {
   return (
     <header className="bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40">
@@ -103,6 +108,19 @@ export const Navbar: React.FC<NavbarProps> = ({
         </button>
 
         <div className="h-5 w-px bg-slate-800 mx-1 hidden sm:block" />
+
+        <button
+          onClick={onToggleMapEditor}
+          title="Paint custom walls, crates, or spawn practice dummies"
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-md border transition ${
+            isMapEditing
+              ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20'
+              : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border-slate-700'
+          }`}
+        >
+          <Wrench className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Map Editor</span>
+        </button>
 
         <button
           onClick={onOpenCharacterModal}

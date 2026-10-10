@@ -1,0 +1,196 @@
+// Standard 5e SRD Spells and Cantrips library for player education
+
+export interface SrdSpell {
+  id: string;
+  name: string;
+  level: number; // 0 = Cantrip
+  school: 'Evocation' | 'Abjuration' | 'Conjuration' | 'Divination' | 'Enchantment' | 'Illusion' | 'Necromancy' | 'Transmutation';
+  castingTime: '1 Action' | '1 Bonus Action' | '1 Reaction';
+  rangeFt: number;
+  components: string; // "V, S" or "V, S, M"
+  duration: string;
+  concentration: boolean;
+  damageType?: string;
+  damageFormula?: string;
+  attackType?: 'melee_spell' | 'ranged_spell' | 'save' | 'buff' | 'utility';
+  saveType?: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
+  description: string;
+  tabletopTip: string;
+}
+
+export const SRD_SPELLS: SrdSpell[] = [
+  // Cantrips (Level 0)
+  {
+    id: 'srd-fire-bolt',
+    name: 'Fire Bolt',
+    level: 0,
+    school: 'Evocation',
+    castingTime: '1 Action',
+    rangeFt: 120,
+    components: 'V, S',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageType: 'fire',
+    damageFormula: '1d10',
+    attackType: 'ranged_spell',
+    description: 'You hurl a mote of fire at a creature or object within range. Make a ranged spell attack. On a hit, the target takes 1d10 fire damage. A flammable object hit by this spell ignites if it isn\'t being worn or carried.',
+    tabletopTip: 'Roll a d20 + your Spell Attack Modifier. If you hit, roll 1d10 for fire damage. You do NOT add your spellcasting ability modifier to cantrip damage!',
+  },
+  {
+    id: 'srd-ray-of-frost',
+    name: 'Ray of Frost',
+    level: 0,
+    school: 'Evocation',
+    castingTime: '1 Action',
+    rangeFt: 60,
+    components: 'V, S',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageType: 'cold',
+    damageFormula: '1d8',
+    attackType: 'ranged_spell',
+    description: 'A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack. On a hit, it takes 1d8 cold damage, and its speed is reduced by 10 feet until the start of your next turn.',
+    tabletopTip: 'Roll d20 + Spell Attack Mod. Great for kiting melee enemies because it reduces their speed by 10 ft (2 grid squares).',
+  },
+  {
+    id: 'srd-eldritch-blast',
+    name: 'Eldritch Blast',
+    level: 0,
+    school: 'Evocation',
+    castingTime: '1 Action',
+    rangeFt: 120,
+    components: 'V, S',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageType: 'force',
+    damageFormula: '1d10',
+    attackType: 'ranged_spell',
+    description: 'A beam of crackling energy streaks toward a creature within range. Make a ranged spell attack. On a hit, the target takes 1d10 force damage. Force damage is almost never resisted.',
+    tabletopTip: 'Roll d20 + Spell Attack Mod. Force damage is the most reliable damage type in 5e because virtually no creatures resist it.',
+  },
+  {
+    id: 'srd-sacred-flame',
+    name: 'Sacred Flame',
+    level: 0,
+    school: 'Evocation',
+    castingTime: '1 Action',
+    rangeFt: 60,
+    components: 'V, S',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageType: 'radiant',
+    damageFormula: '1d8',
+    attackType: 'save',
+    saveType: 'dex',
+    description: 'Flame-like radiance descends on a creature you can see within range. The target must succeed on a Dexterity saving throw or take 1d8 radiant damage. The target gains no benefit from cover for this saving throw.',
+    tabletopTip: 'You DO NOT roll to hit! The DM rolls a d20 + the monster\'s DEX save against your Spell Save DC. Note: Sacred Flame explicitly ignores cover bonuses!',
+  },
+
+  // 1st Level Spells
+  {
+    id: 'srd-magic-missile',
+    name: 'Magic Missile',
+    level: 1,
+    school: 'Evocation',
+    castingTime: '1 Action',
+    rangeFt: 120,
+    components: 'V, S',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageType: 'force',
+    damageFormula: '3d4 + 3',
+    attackType: 'utility',
+    description: 'You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4 + 1 force damage to its target. The darts all strike simultaneously, and you can direct them to hit one creature or several.',
+    tabletopTip: 'No attack roll, no saving throw! The darts automatically hit. Excellent for breaking enemy spellcasters\' concentration by forcing 3 separate CON saves.',
+  },
+  {
+    id: 'srd-shield',
+    name: 'Shield',
+    level: 1,
+    school: 'Abjuration',
+    castingTime: '1 Reaction',
+    rangeFt: 0,
+    components: 'V, S',
+    duration: '1 round',
+    concentration: false,
+    attackType: 'buff',
+    description: 'An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.',
+    tabletopTip: 'Cast this as a REACTION when an attack hits you. If an enemy roll beats your AC by 1 to 5, casting Shield turns that hit into a miss!',
+  },
+  {
+    id: 'srd-cure-wounds',
+    name: 'Cure Wounds',
+    level: 1,
+    school: 'Evocation',
+    castingTime: '1 Action',
+    rangeFt: 5,
+    components: 'V, S',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageFormula: '1d8 + 3',
+    attackType: 'buff',
+    description: 'A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.',
+    tabletopTip: 'Requires touch (5 ft reach) and your main Action. If you need to heal at range or use your action for something else, Healing Word is usually preferred.',
+  },
+  {
+    id: 'srd-healing-word',
+    name: 'Healing Word',
+    level: 1,
+    school: 'Evocation',
+    castingTime: '1 Bonus Action',
+    rangeFt: 60,
+    components: 'V',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageFormula: '1d4 + 3',
+    attackType: 'buff',
+    description: 'A creature of your choice that you can see within range regains hit points equal to 1d4 + your spellcasting ability modifier.',
+    tabletopTip: 'The premier emergency healing spell in 5e! Costs only a BONUS ACTION and has a 60 ft range. Perfect for popping an unconscious ally back onto their feet.',
+  },
+  {
+    id: 'srd-bless',
+    name: 'Bless',
+    level: 1,
+    school: 'Enchantment',
+    castingTime: '1 Action',
+    rangeFt: 30,
+    components: 'V, S, M',
+    duration: 'Concentration, up to 1 minute',
+    concentration: true,
+    attackType: 'buff',
+    description: 'You bless up to three creatures of your choice within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.',
+    tabletopTip: 'One of the strongest Level 1 spells. Remember to remind your teammates: "+1d4 to all attack rolls AND all saving throws!" Requires Concentration.',
+  },
+
+  // 2nd Level Spells
+  {
+    id: 'srd-misty-step',
+    name: 'Misty Step',
+    level: 2,
+    school: 'Conjuration',
+    castingTime: '1 Bonus Action',
+    rangeFt: 30,
+    components: 'V',
+    duration: 'Instantaneous',
+    concentration: false,
+    attackType: 'utility',
+    description: 'Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.',
+    tabletopTip: 'Costs a BONUS ACTION. Because it is teleportation, it DOES NOT provoke Opportunity Attacks! Excellent for escaping grapple or melee encirclement.',
+  },
+  {
+    id: 'srd-scorching-ray',
+    name: 'Scorching Ray',
+    level: 2,
+    school: 'Evocation',
+    castingTime: '1 Action',
+    rangeFt: 120,
+    components: 'V, S',
+    duration: 'Instantaneous',
+    concentration: false,
+    damageType: 'fire',
+    damageFormula: '2d6',
+    attackType: 'ranged_spell',
+    description: 'You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 fire damage.',
+    tabletopTip: 'At the table, you make THREE separate d20 attack rolls! Each hit deals 2d6 fire damage.',
+  },
+];

@@ -14,6 +14,8 @@ import {
   Info
 } from 'lucide-react';
 
+import { MapEditorBrush } from './MapEditorToolbar';
+
 interface BattleMapProps {
   gridWidth: number;
   gridHeight: number;
@@ -23,6 +25,9 @@ interface BattleMapProps {
   selectedAction: ActionItem | null;
   onMovePlayer: (newX: number, newY: number, costFt: number) => void;
   onTargetCombatant: (target: Combatant, action: ActionItem, cover: CoverEvaluation) => void;
+  isEditingMap?: boolean;
+  activeBrush?: MapEditorBrush;
+  onCellPaint?: (x: number, y: number, brush: MapEditorBrush) => void;
 }
 
 const CELL_SIZE = 56; // Grid unit dimension
@@ -36,6 +41,9 @@ export const BattleMap: React.FC<BattleMapProps> = ({
   selectedAction,
   onMovePlayer,
   onTargetCombatant,
+  isEditingMap = false,
+  activeBrush = 'wall',
+  onCellPaint,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [showLegend, setShowLegend] = useState(true);
@@ -104,6 +112,12 @@ export const BattleMap: React.FC<BattleMapProps> = ({
   const currentHoveredGridCell = hoveredCell ? cellMap.get(`${hoveredCell.x},${hoveredCell.y}`) : null;
 
   const handleCellClick = (x: number, y: number) => {
+    // If in map editor mode, paint cell
+    if (isEditingMap && onCellPaint) {
+      onCellPaint(x, y, activeBrush);
+      return;
+    }
+
     const occupant = combatantAtTile.get(`${x},${y}`);
 
     // If an action is selected, try to target occupant
