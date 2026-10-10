@@ -1,6 +1,7 @@
 import React from 'react';
 import { CellType } from '../types/combat';
-import { Wrench, Shield, AlertTriangle, Layers, Plus, Trash2, X } from 'lucide-react';
+import { Wrench, Shield, AlertTriangle, Layers, Plus, Trash2, X, Compass, Sparkles } from 'lucide-react';
+import { ART_ASSETS } from '../utils/artAssets';
 
 export type MapEditorBrush = 
   | 'floor' 
@@ -31,37 +32,44 @@ export const MapEditorToolbar: React.FC<MapEditorToolbarProps> = ({
   if (!isEditing) return null;
 
   const brushes: Array<{ id: MapEditorBrush; label: string; icon: string }> = [
-    { id: 'floor', label: 'Clear Floor', icon: '🟢' },
-    { id: 'wall', label: 'Solid Wall', icon: '🧱' },
+    { id: 'floor', label: 'Stone Floor', icon: '⚔️' },
+    { id: 'wall', label: 'Stone Rampart', icon: '🧱' },
     { id: 'half_cover', label: '+2 AC Crate', icon: '📦' },
     { id: 'difficult_terrain', label: '2x Rubble', icon: '⚠️' },
-    { id: 'spawn_dummy', label: '+ Target Dummy', icon: '🎯' },
-    { id: 'spawn_goblin', label: '+ Goblin Enemy', icon: '👺' },
-    { id: 'spawn_ally', label: '+ Companion Ally', icon: '🛡️' },
+    { id: 'spawn_dummy', label: 'Target Dummy', icon: '🎯' },
+    { id: 'spawn_goblin', label: 'Goblin Raider', icon: '👺' },
+    { id: 'spawn_ally', label: 'Thorin Ally', icon: '🛡️' },
   ];
 
   return (
-    <div className="w-full bg-slate-900 border-b border-amber-500/40 p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
-      <div className="flex items-center gap-2">
-        <span className="flex items-center gap-1.5 font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/30">
-          <Wrench className="w-3.5 h-3.5" />
-          Map Sandbox Editor Active
+    <div className="relative overflow-hidden w-full bg-slate-950 border-b-2 border-amber-700/60 p-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs shadow-xl">
+      {/* Ambient Dark Wood Texture */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
+        style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/80 to-slate-950/90 pointer-events-none" />
+
+      <div className="relative z-10 flex items-center gap-2">
+        <span className="flex items-center gap-1.5 font-bold font-fantasy text-amber-300 bg-amber-950/70 px-3 py-1 rounded-xl border border-amber-600/60 shadow-sm">
+          <Compass className="w-3.5 h-3.5 text-amber-400" />
+          Cartographer's Sandbox Palette
         </span>
-        <span className="text-slate-400 text-[11px] hidden md:inline">
-          Click any grid cell to paint terrain or drop test combatants!
+        <span className="text-amber-200/70 text-[11px] font-serif-rpg hidden lg:inline">
+          Click any battlemap square to paint stone ramparts, cover crates, or summon combatants.
         </span>
       </div>
 
       {/* Brush buttons */}
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="relative z-10 flex flex-wrap items-center gap-1.5">
         {brushes.map((b) => (
           <button
             key={b.id}
             onClick={() => onSelectBrush(b.id)}
-            className={`px-2.5 py-1 rounded-lg font-medium text-xs transition flex items-center gap-1 ${
+            className={`px-3 py-1 rounded-xl font-fantasy text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm ${
               activeBrush === b.id
-                ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
-                : 'bg-slate-950 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800'
+                ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-slate-950 font-bold border border-amber-300 shadow-md shadow-amber-500/30 scale-105'
+                : 'bg-slate-900/90 border border-amber-900/50 text-amber-200 hover:text-white hover:border-amber-600'
             }`}
           >
             <span>{b.icon}</span>
@@ -71,25 +79,25 @@ export const MapEditorToolbar: React.FC<MapEditorToolbarProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="relative z-10 flex items-center gap-2">
         <button
           onClick={onOpenExportImport}
-          className="px-2.5 py-1 rounded-lg bg-indigo-950/50 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-700/60 font-semibold text-xs flex items-center gap-1 transition"
+          className="px-3 py-1 rounded-xl bg-indigo-950/60 hover:bg-indigo-900/70 text-indigo-200 border border-indigo-700/60 font-fantasy text-xs flex items-center gap-1.5 transition shadow-sm cursor-pointer"
           title="Export or Import custom battlemap JSON"
         >
-          <Layers className="w-3.5 h-3.5" /> Save / Load Map
+          <Layers className="w-3.5 h-3.5 text-indigo-400" /> Archive Map
         </button>
         <button
           onClick={onClearCustomMap}
-          className="px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800 text-xs flex items-center gap-1"
+          className="px-2.5 py-1 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-800 text-xs font-fantasy flex items-center gap-1 transition cursor-pointer"
         >
           <Trash2 className="w-3 h-3" /> Reset
         </button>
         <button
           onClick={onToggleEditMode}
-          className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs flex items-center gap-1"
+          className="px-3 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-200 border border-amber-800/60 font-fantasy font-semibold text-xs flex items-center gap-1 transition cursor-pointer"
         >
-          <X className="w-3.5 h-3.5" /> Close Editor
+          <X className="w-3.5 h-3.5" /> Close Palette
         </button>
       </div>
     </div>

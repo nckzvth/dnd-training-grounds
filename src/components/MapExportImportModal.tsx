@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ART_ASSETS } from '../utils/artAssets';
 import { SavedMapData } from '../types/combat';
 import { Download, Upload, Copy, Check, Trash2, Map, FileJson, X, Plus, AlertCircle } from 'lucide-react';
 
@@ -120,11 +121,14 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-5 shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-2xl  max-w-xl w-full p-5 flex flex-col ">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
+        <div className="absolute top-0 right-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '150px', height: '150px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
+        <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div>
-            <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+            <h2 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 flex items-center gap-2 drop-shadow-md">
               <Map className="w-5 h-5 text-amber-400" />
               Battlemap Export & Import Hub
             </h2>
@@ -168,7 +172,8 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                 type="text"
                 value={mapNameInput}
                 onChange={(e) => setMapNameInput(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-900/90 border border-amber-800/60  rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500 relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}
                 placeholder="e.g. Goblin Outpost Ambush"
               />
             </div>
@@ -182,7 +187,7 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
               </button>
               <button
                 onClick={handleCopyClipboard}
-                className="flex-1 py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold flex items-center justify-center gap-1.5 transition"
+                className="flex-1 py-2 px-3 rounded-lg btn-fantasy-gold font-bold flex items-center justify-center gap-1.5 transition"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 {copied ? 'Copied to Clipboard!' : 'Copy JSON'}
@@ -205,7 +210,8 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                   {savedMaps.map((m) => (
                     <div
                       key={m.id}
-                      className="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between"
+                      className="p-2 rounded-lg bg-slate-900/90 border border-amber-800/60  flex items-center justify-between relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}
                     >
                       <div>
                         <div className="font-semibold text-slate-200">{m.name}</div>
@@ -258,7 +264,8 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                 value={pastedJson}
                 onChange={(e) => setPastedJson(e.target.value)}
                 placeholder='Paste map JSON string here...'
-                className="w-full h-28 bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-[11px] text-slate-300 focus:outline-none focus:border-amber-500"
+                className="w-full h-28 bg-slate-900/90 border border-amber-800/60  rounded-lg p-2 font-mono text-[11px] text-slate-300 focus:outline-none focus:border-amber-500 relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}
               />
             </div>
 
@@ -282,7 +289,7 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
             </button>
           </div>
         )}
-      </div>
+      </div></div>
     </div>
   );
 };

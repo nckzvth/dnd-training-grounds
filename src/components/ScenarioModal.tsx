@@ -1,4 +1,5 @@
 import React from 'react';
+import { ART_ASSETS } from '../utils/artAssets';
 import { EncounterPreset, PRESET_ENCOUNTERS } from '../data/presetEncounters';
 import { MapPin, Swords, Target, Shield, X, Check } from 'lucide-react';
 
@@ -19,11 +20,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-xl w-full p-5 shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-2xl  max-w-xl w-full p-5 flex flex-col ">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
+        <div className="absolute top-0 right-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '150px', height: '150px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
+        <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div>
-            <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+            <h2 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 flex items-center gap-2 drop-shadow-md">
               <MapPin className="w-5 h-5 text-amber-500" />
               Practice Maps & Tactical Scenarios
             </h2>
@@ -45,7 +49,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                 className={`p-3.5 rounded-lg border transition ${
                   isActive
                     ? 'bg-amber-950/20 border-amber-600 ring-1 ring-amber-600'
-                    : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                    : 'bg-slate-900/90 border-amber-800/60 hover:border-amber-600/80 '
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -75,7 +79,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1 transition ${
                       isActive
                         ? 'bg-amber-600 text-white shadow-md shadow-amber-900/30'
-                        : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                        : 'btn-fantasy-gold'
                     }`}
                   >
                     {isActive ? <Check className="w-3.5 h-3.5" /> : null}
@@ -85,7 +89,7 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
               </div>
             );
           })}
-        </div>
+        </div></div>
       </div>
     </div>
   );

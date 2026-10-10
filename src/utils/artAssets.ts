@@ -4,6 +4,9 @@ import tokenGoblinImg from '../assets/art/token_goblin.jpg';
 import tokenDwarfImg from '../assets/art/token_dwarf.jpg';
 import tokenDummyImg from '../assets/art/token_dummy.jpg';
 import diceTrayImg from '../assets/art/dice_tray.jpg';
+import parchmentImg from '../assets/art/parchment.jpg';
+import darkWoodImg from '../assets/art/dark_wood.jpg';
+import crestEmblemImg from '../assets/art/crest_emblem.jpg';
 
 export const ART_ASSETS = {
   battlemap: battlemapImg,
@@ -12,6 +15,9 @@ export const ART_ASSETS = {
   tokenDwarf: tokenDwarfImg,
   tokenDummy: tokenDummyImg,
   diceTray: diceTrayImg,
+  parchment: parchmentImg,
+  darkWood: darkWoodImg,
+  crestEmblem: crestEmblemImg,
 };
 
 export function getTokenImage(combatant: { 
@@ -19,8 +25,8 @@ export function getTokenImage(combatant: {
   isFriendly?: boolean; 
   aiType?: string; 
   name?: string; 
-  race?: string;
-  archetype?: string;
+  race?: string; 
+  archetype?: string; 
 }): string {
   if (combatant.isPlayer) {
     return ART_ASSETS.tokenRogue;

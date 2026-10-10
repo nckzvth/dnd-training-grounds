@@ -1,4 +1,5 @@
 import React from 'react';
+import { ART_ASSETS } from '../utils/artAssets';
 import { HelpCircle, X, Shield, Swords, Sparkles, Clock, Footprints, Target } from 'lucide-react';
 
 interface HelpModalProps {
@@ -11,11 +12,14 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-xl w-full p-5 shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-2xl  max-w-xl w-full p-5 flex flex-col ">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
+        <div className="absolute top-0 right-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '150px', height: '150px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
+        <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div>
-            <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+            <h2 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 flex items-center gap-2 drop-shadow-md">
               <HelpCircle className="w-5 h-5 text-amber-500" />
               Tactical Combat & Rules Guide
             </h2>
@@ -28,7 +32,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto space-y-3.5 py-3 pr-1 text-xs text-slate-300 leading-relaxed">
-          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-lg bg-slate-900/90 border border-amber-800/60  relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
             <h3 className="font-bold text-slate-100 text-sm mb-1 flex items-center gap-2">
               <Footprints className="w-4 h-4 text-cyan-400" /> Split Movement & Grid Rules
             </h3>
@@ -37,7 +42,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             </p>
           </div>
 
-          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-lg bg-slate-900/90 border border-amber-800/60  relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
             <h3 className="font-bold text-slate-100 text-sm mb-1 flex items-center gap-2">
               <Shield className="w-4 h-4 text-amber-400" /> Dynamic Raycast Cover Engine
             </h3>
@@ -51,7 +57,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             </ul>
           </div>
 
-          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-lg bg-slate-900/90 border border-amber-800/60  relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
             <h3 className="font-bold text-slate-100 text-sm mb-1 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-400" /> Reactive Event Interceptor
             </h3>
@@ -60,7 +67,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             </p>
           </div>
 
-          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
+          <div className="p-3 rounded-lg bg-slate-900/90 border border-amber-800/60  relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
             <h3 className="font-bold text-slate-100 text-sm mb-1 flex items-center gap-2">
               <Target className="w-4 h-4 text-emerald-400" /> Sneak Attack & Party Anchors
             </h3>
@@ -68,7 +76,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
               Rogues deal Sneak Attack damage if they have <strong>Advantage</strong> (e.g. from Hiding or Steady Aim) OR if an <strong>Ally is within 5 feet</strong> of the target. Use the Companion Tank in Scenario 3 to test party positioning!
             </p>
           </div>
-        </div>
+        </div></div>
       </div>
     </div>
   );

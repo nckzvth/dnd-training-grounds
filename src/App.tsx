@@ -33,6 +33,7 @@ import { RestModal } from './components/RestModal';
 import { SpellPickerModal } from './components/SpellPickerModal';
 import { MapEditorToolbar, MapEditorBrush } from './components/MapEditorToolbar';
 import { MapExportImportModal } from './components/MapExportImportModal';
+import { ART_ASSETS } from './utils/artAssets';
 
 export function App() {
   // Current active encounter and player
@@ -748,7 +749,14 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="relative min-h-screen bg-slate-950 text-amber-50 flex flex-col font-sans selection:bg-amber-600/30 selection:text-amber-200">
+      {/* Ambient Tabletop Oak Grain Backdrop */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
+        style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }}
+      />
+      <div className="fixed inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/95 to-slate-950 pointer-events-none" />
+
       {/* Top Navbar */}
       <Navbar
         currentRound={currentRound}

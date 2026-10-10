@@ -1,4 +1,5 @@
 import React from 'react';
+import { ART_ASSETS } from '../utils/artAssets';
 import { TelemetryRoundRecord } from '../types/combat';
 import { BarChart3, AlertTriangle, CheckCircle, ShieldCheck, Zap, X } from 'lucide-react';
 
@@ -31,11 +32,14 @@ export const TelemetryModal: React.FC<TelemetryModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-xl w-full p-5 shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-2xl  max-w-xl w-full p-5 flex flex-col ">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
+        <div className="absolute top-0 right-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '150px', height: '150px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
+        <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div>
-            <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+            <h2 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 flex items-center gap-2 drop-shadow-md">
               <BarChart3 className="w-5 h-5 text-purple-400" />
               Tactical Telemetry & Action Budget Diagnostics
             </h2>
@@ -168,7 +172,7 @@ export const TelemetryModal: React.FC<TelemetryModalProps> = ({
               ))}
             </tbody>
           </table>
-        </div>
+        </div></div>
       </div>
     </div>
   );

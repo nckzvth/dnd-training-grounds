@@ -1,4 +1,5 @@
 import React from 'react';
+import { ART_ASSETS } from '../utils/artAssets';
 import { ReactionPrompt } from '../types/combat';
 import { ShieldAlert, Zap, AlertCircle } from 'lucide-react';
 
@@ -21,12 +22,13 @@ export const ReactionModal: React.FC<ReactionModalProps> = ({ prompt }) => {
             <div className="text-[10px] uppercase font-bold tracking-wider text-amber-400 font-mono">
               Reactive Event Interceptor
             </div>
-            <h3 className="text-base font-bold text-slate-100">{prompt.title}</h3>
+            <h3 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 drop-shadow-md">{prompt.title}</h3>
           </div>
         </div>
 
         {/* Description & Rules explanation */}
-        <div className="mt-3.5 p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed font-sans">
+        <div className="mt-3.5 p-3 rounded-lg bg-slate-900/90 border border-amber-800/60  text-xs text-slate-300 leading-relaxed font-sans relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
           {prompt.description}
         </div>
 
@@ -38,8 +40,8 @@ export const ReactionModal: React.FC<ReactionModalProps> = ({ prompt }) => {
               onClick={opt.onExecute}
               className={`w-full py-2 px-3 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 ${
                 opt.primary
-                  ? 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white shadow-lg shadow-amber-900/30'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                  ? 'btn-fantasy-gold text-white shadow-lg shadow-amber-900/30'
+                  : 'btn-fantasy-gold'
               }`}
             >
               <Zap className="w-3.5 h-3.5 fill-current" />

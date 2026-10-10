@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ART_ASSETS } from '../utils/artAssets';
 import { Combatant } from '../types/combat';
 import { rollDice } from '../utils/dice';
 import { Moon, Sun, Heart, Sparkles, X, Check, AlertCircle, Info } from 'lucide-react';
@@ -82,11 +83,14 @@ export const RestModal: React.FC<RestModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-5 shadow-2xl flex flex-col">
+      <div className="bg-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-2xl  max-w-xl w-full p-5 flex flex-col ">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
+        <div className="absolute top-0 right-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '150px', height: '150px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
+        <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div>
-            <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+            <h2 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 flex items-center gap-2 drop-shadow-md">
               {restType === 'short' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-indigo-400" />}
               Rest & Recovery Mechanics
             </h2>
@@ -98,7 +102,8 @@ export const RestModal: React.FC<RestModalProps> = ({
         </div>
 
         {/* Current Status Banner */}
-        <div className="my-3 p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between text-xs">
+        <div className="my-3 p-2.5 rounded-xl bg-slate-900/90 border border-amber-800/60 /80 flex items-center justify-between text-xs relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
           <div>
             <span className="text-slate-400">Hit Points: </span>
             <span className="font-bold text-emerald-400 font-mono">
@@ -149,7 +154,8 @@ export const RestModal: React.FC<RestModalProps> = ({
         {/* Short Rest Panel */}
         {restType === 'short' ? (
           <div className="space-y-3 text-xs">
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-amber-800/60  relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
               <div className="font-bold text-slate-200 mb-1 flex items-center justify-between">
                 <span>Spend Hit Dice</span>
                 <span className="font-mono text-amber-400 font-bold">{hitDiceCurrent} {hitDiceDie} remaining</span>
@@ -215,7 +221,7 @@ export const RestModal: React.FC<RestModalProps> = ({
               disabled={hitDiceCurrent <= 0}
               className={`w-full py-2.5 rounded-xl font-bold text-xs shadow-md transition ${
                 hitDiceCurrent > 0
-                  ? 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white'
+                  ? 'btn-fantasy-gold text-white'
                   : 'bg-slate-800 text-slate-500 cursor-not-allowed'
               }`}
             >
@@ -224,7 +230,8 @@ export const RestModal: React.FC<RestModalProps> = ({
           </div>
         ) : (
           <div className="space-y-3 text-xs">
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <div className="p-3 rounded-xl bg-slate-900/90 border border-amber-800/60  relative overflow-hidden"
+                style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url(${ART_ASSETS.parchment})`, backgroundBlendMode: "overlay" }}>
               <div className="font-bold text-slate-200 mb-1">5e Official Long Rest Rules</div>
               <ul className="list-disc list-inside space-y-1 text-slate-400 text-[11px]">
                 <li>Hit Points fully restored to maximum (<strong className="text-slate-200">{player.vitals.maxHp} HP</strong>).</li>
@@ -238,13 +245,13 @@ export const RestModal: React.FC<RestModalProps> = ({
 
             <button
               onClick={handleExecuteLongRest}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-md transition"
+              className="w-full py-2.5 rounded-xl btn-fantasy-gold text-white text-white font-bold text-xs shadow-md transition"
             >
               Complete Long Rest (Full Recovery & Regain Hit Dice)
             </button>
           </div>
         )}
-      </div>
+      </div></div>
     </div>
   );
 };
