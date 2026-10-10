@@ -634,9 +634,9 @@ export function App() {
       />
 
       {/* Main Tactical Workspace */}
-      <main className="flex-1 p-3 md:p-4 flex flex-col lg:flex-row gap-3 max-w-7xl w-full mx-auto overflow-hidden">
+      <main className="flex-1 p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr] gap-4 max-w-[1600px] w-full mx-auto items-start">
         {/* Left: Character Sheet & Action Deck */}
-        <div className="w-full lg:w-80 shrink-0">
+        <div className="w-full shrink-0">
           <CharacterSidebar
             player={player}
             selectedAction={selectedAction}
@@ -646,7 +646,7 @@ export function App() {
         </div>
 
         {/* Center / Right: Tactical Battlemap & Combat Ledger */}
-        <div className="flex-1 flex flex-col gap-3 min-w-0">
+        <div className="flex flex-col gap-3 min-w-0 w-full">
           {/* Battlemap Viewport */}
           <BattleMap
             gridWidth={activeEncounter.gridWidth}
