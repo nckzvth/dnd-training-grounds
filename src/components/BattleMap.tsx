@@ -197,11 +197,11 @@ export const BattleMap: React.FC<BattleMapProps> = ({
       )}
 
       {/* SVG Canvas Map Area (Expansive Tactical Viewport) */}
-      <div className="relative w-full flex items-center justify-center p-2 sm:p-3 bg-slate-950 overflow-x-auto min-h-[420px]">
-        <div className="w-full max-w-[1020px] mx-auto">
+      <div className="relative w-full flex items-center justify-center p-2 sm:p-4 bg-slate-950/95 overflow-x-auto min-h-[460px] 2xl:min-h-[540px]">
+        <div className="w-full max-w-[1700px] 2xl:max-w-[1950px] mx-auto flex items-center justify-center">
           <svg
             viewBox={`0 0 ${gridWidth * CELL_SIZE} ${gridHeight * CELL_SIZE}`}
-            className="w-full h-auto max-h-[66vh] block rounded-xl border-2 border-amber-900/60 shadow-2xl bg-slate-900"
+            className="w-full h-auto max-h-[73vh] 2xl:max-h-[79vh] block rounded-xl border-2 border-amber-900/60 shadow-2xl bg-slate-900 object-contain"
             onMouseLeave={() => setHoveredCell(null)}
           >
             <defs>

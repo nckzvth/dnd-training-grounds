@@ -783,8 +783,8 @@ export function App() {
         return;
       }
 
-      // Hotkey Actions 1 to 7
-      if (/^[1-7]$/.test(e.key)) {
+      // Hotkey Actions 1 to 8
+      if (/^[1-8]$/.test(e.key)) {
         const slotIdx = parseInt(e.key, 10) - 1;
         const allActions = [...player.actionDeck.actions, ...player.actionDeck.bonusActions];
         const targetAction = allActions[slotIdx];
@@ -893,7 +893,7 @@ export function App() {
       />
 
       {/* Main Tactical Workspace (Spacious, Cinematic RPG Stage) */}
-      <main className="flex-1 p-2 sm:p-3 flex flex-col justify-between max-w-[1500px] w-full mx-auto relative">
+      <main className="flex-1 px-2 sm:px-4 md:px-6 py-2 flex flex-col justify-between max-w-[1850px] 2xl:max-w-[2100px] w-full mx-auto relative">
         {/* Centerpiece: Expansive Tactical Battlemap */}
         <div className="flex-1 w-full flex items-center justify-center min-h-0">
           <BattleMap
