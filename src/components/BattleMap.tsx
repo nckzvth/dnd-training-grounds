@@ -167,30 +167,31 @@ export const BattleMap: React.FC<BattleMapProps> = ({
         </div>
       </div>
 
-      {/* Visual Map Legend (Explains squares and tokens) */}
+      {/* Floating Map Legend (Zero Layout Shift Popover) */}
       {showLegend && (
-        <div className="shrink-0 px-3 py-1 bg-[#120c08]/95 border-b border-amber-900/40 flex flex-wrap items-center gap-3 text-[11px] text-amber-200/70 font-medium">
-          <span className="font-bold text-amber-300/90 flex items-center gap-1 font-fantasy">
-            <Info className="w-3.5 h-3.5 text-amber-400" /> Tabletop Key:
+        <div className="absolute top-11 right-3 z-30 bg-[#120c08]/98 border-2 border-amber-800/80 rounded-xl p-3 shadow-2xl backdrop-blur-md flex flex-col gap-2 text-xs text-amber-200/90 animate-in fade-in duration-150">
+          <div className="flex items-center justify-between pb-1.5 border-b border-amber-900/60 font-fantasy font-bold text-amber-300">
+            <span className="flex items-center gap-1.5"><Info className="w-3.5 h-3.5 text-amber-400" /> Tabletop Key</span>
+            <button onClick={() => setShowLegend(false)} className="text-amber-400 hover:text-amber-100 cursor-pointer text-xs px-1">✕</button>
+          </div>
+          <span className="flex items-center gap-2 text-stone-300">
+            <span className="w-3 h-3 rounded-sm bg-stone-900 border border-stone-600 inline-block shrink-0" />
+            Stone Rampart (Total Cover / Blocks LOS)
           </span>
-          <span className="flex items-center gap-1.5 text-stone-300">
-            <span className="w-2.5 h-2.5 rounded-sm bg-stone-900 border border-stone-700 inline-block" />
-            Stone Rampart (Total Cover)
-          </span>
-          <span className="flex items-center gap-1.5 text-amber-300/80">
-            <span className="w-2.5 h-2.5 rounded-sm bg-amber-950/80 border border-amber-700/80 inline-block" />
+          <span className="flex items-center gap-2 text-amber-300">
+            <span className="w-3 h-3 rounded-sm bg-amber-950 border border-amber-600 inline-block shrink-0" />
             Timber Crates (+2 AC Half Cover)
           </span>
-          <span className="flex items-center gap-1.5 text-amber-200/70">
-            <span className="w-2.5 h-2.5 rounded-sm bg-stone-900 border border-amber-900/60 inline-block" />
+          <span className="flex items-center gap-2 text-amber-200/80">
+            <span className="w-3 h-3 rounded-sm bg-stone-900 border border-amber-800 inline-block shrink-0" />
             Rubble (2x Movement Cost)
           </span>
-          <span className="flex items-center gap-1.5 text-sky-300">
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block ring-1 ring-sky-400/80" />
+          <span className="flex items-center gap-2 text-sky-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block ring-1 ring-sky-400 shrink-0" />
             Player Token ({player.name})
           </span>
-          <span className="flex items-center gap-1.5 text-rose-300">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block ring-1 ring-rose-500/80" />
+          <span className="flex items-center gap-2 text-rose-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block ring-1 ring-rose-500 shrink-0" />
             Hostile Foes
           </span>
         </div>
@@ -524,16 +525,16 @@ export const BattleMap: React.FC<BattleMapProps> = ({
         </div>
       </div>
 
-      {/* Detailed Interactive Hover Tooltip Bar */}
-      <div className="shrink-0 px-3.5 py-1.5 bg-slate-950/95 border-t border-amber-800/60 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+      {/* Fixed-Height Tactical Tooltip & Raycast Inspection Bar (Zero Layout Shift) */}
+      <div className="shrink-0 h-9 min-h-[36px] max-h-[36px] px-3.5 bg-slate-950/98 border-t border-amber-800/60 flex items-center justify-between gap-3 text-xs overflow-hidden select-none">
         {hoveredCell ? (
-          <div className="flex flex-wrap items-center gap-3 text-amber-100">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden whitespace-nowrap text-amber-100">
             {/* Tile Coordinate & Type */}
-            <div className="flex items-center gap-1.5 font-mono">
-              <span className="px-2 py-0.5 rounded bg-slate-900 border border-amber-900/60 text-amber-300 text-[11px] font-bold">
+            <div className="flex items-center gap-1.5 shrink-0 font-mono">
+              <span className="px-1.5 py-0.5 rounded bg-slate-900 border border-amber-900/70 text-amber-300 text-xs font-bold">
                 [{hoveredCell.x}, {hoveredCell.y}]
               </span>
-              <span className="font-bold text-amber-100 font-fantasy">
+              <span className="font-bold text-amber-100 font-fantasy text-xs">
                 {currentHoveredGridCell?.type === 'wall' ? '🧱 Stone Rampart (Total Cover)' :
                  currentHoveredGridCell?.type === 'half_cover' ? '📦 Timber Crates (+2 AC Half Cover)' :
                  currentHoveredGridCell?.type === 'difficult_terrain' ? '⚠️ Cobblestone Rubble (Difficult Terrain)' :
@@ -542,47 +543,47 @@ export const BattleMap: React.FC<BattleMapProps> = ({
             </div>
 
             {/* Tactical Rule Detail for tile */}
-            <span className="text-[11px] text-amber-200/70">
-              {currentHoveredGridCell?.type === 'wall' ? 'Blocks physical movement and all line-of-sight.' :
-               currentHoveredGridCell?.type === 'half_cover' ? 'Grants +2 AC and +2 Dexterity saving throws against ranged attacks through this tile.' :
-               currentHoveredGridCell?.type === 'difficult_terrain' ? 'Costs 10 ft of movement per 5-ft square (2x movement cost).' :
-               'Standard arena floor. Costs 5 ft movement, provides no cover.'}
+            <span className="text-xs text-amber-200/75 truncate hidden md:inline">
+              {currentHoveredGridCell?.type === 'wall' ? 'Blocks movement & all line-of-sight.' :
+               currentHoveredGridCell?.type === 'half_cover' ? '+2 AC & +2 DEX saves against ranged attacks.' :
+               currentHoveredGridCell?.type === 'difficult_terrain' ? 'Costs 10 ft per 5-ft square (2x cost).' :
+               'Standard arena floor (5 ft movement, no cover).'}
             </span>
 
             {/* If token is on tile */}
             {hoveredCombatant && (
-              <div className="flex items-center gap-2 pl-3 border-l border-amber-800/60">
-                <span className="font-bold text-amber-300 font-fantasy">{hoveredCombatant.name}:</span>
-                <span className="font-mono text-[11px] text-amber-200">{hoveredCombatant.vitals.currentHp}/{hoveredCombatant.vitals.maxHp} HP</span>
-                <span className="font-mono text-[11px] text-sky-300 font-bold">AC {hoveredCombatant.vitals.baseAc}</span>
+              <div className="flex items-center gap-2 shrink-0 pl-2.5 border-l border-amber-800/60">
+                <span className="font-bold text-amber-300 font-fantasy text-xs">{hoveredCombatant.name}:</span>
+                <span className="font-mono text-xs text-amber-200">{hoveredCombatant.vitals.currentHp}/{hoveredCombatant.vitals.maxHp} HP</span>
+                <span className="font-mono text-xs text-sky-300 font-bold">AC {hoveredCombatant.vitals.baseAc}</span>
                 {coverResult && (
-                  <span className={`px-2 py-0.5 rounded font-mono font-bold text-[10px] ${
-                    coverResult.cover === 'none' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700' :
-                    coverResult.cover === 'half' ? 'bg-amber-950/80 text-amber-300 border border-amber-700' :
-                    'bg-orange-950/80 text-orange-300 border border-orange-700'
+                  <span className={`px-1.5 py-0.2 rounded font-mono font-bold text-[11px] ${
+                    coverResult.cover === 'none' ? 'bg-emerald-950/90 text-emerald-300 border border-emerald-700' :
+                    coverResult.cover === 'half' ? 'bg-amber-950/90 text-amber-300 border border-amber-700' :
+                    'bg-orange-950/90 text-orange-300 border border-orange-700'
                   }`}>
-                    Raycast Cover: {coverResult.cover.toUpperCase()} (+{coverResult.acBonus} AC)
+                    Cover: {coverResult.cover.toUpperCase()} (+{coverResult.acBonus} AC)
                   </span>
                 )}
-                <span className="text-amber-200/60 text-[11px]">({targetDistanceFt} ft away)</span>
+                <span className="text-amber-200/60 text-xs">({targetDistanceFt} ft away)</span>
               </div>
             )}
           </div>
         ) : (
-          <div className="text-amber-200/60 text-[11px] flex items-center gap-1.5 italic">
-            <Info className="w-3.5 h-3.5 text-amber-400" />
-            Hover over any arena tile, obstacle, or creature token to inspect line-of-sight raycasting, cover bonuses, and movement costs.
+          <div className="flex items-center gap-2 text-amber-200/60 text-xs italic truncate min-w-0">
+            <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span className="truncate">Hover over any arena tile, obstacle, or creature token to inspect line-of-sight raycasting, cover bonuses, and movement costs.</span>
           </div>
         )}
 
         {/* Path cost when moving */}
         {previewPath && (
-          <div className="flex items-center gap-2 font-mono text-[11px] ml-auto">
+          <div className="shrink-0 flex items-center gap-2 font-mono text-xs ml-auto pl-2 border-l border-amber-900/40">
             <Footprints className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Path: <strong className={canAffordMove ? 'text-cyan-300' : 'text-rose-400 font-bold'}>{totalPathCost} ft</strong></span>
+            <span>Path: <strong className={canAffordMove ? 'text-cyan-300 font-bold' : 'text-rose-400 font-bold'}>{totalPathCost} ft</strong></span>
             <span className="text-slate-600">/</span>
             <span>Speed: <strong className="text-slate-300">{player.budget.movementRemainingFt} ft</strong></span>
-            {!canAffordMove && <span className="text-rose-400 font-bold ml-1 font-fantasy">Insufficient Movement</span>}
+            {!canAffordMove && <span className="text-rose-400 font-bold ml-1 font-fantasy hidden sm:inline">Insufficient Move</span>}
           </div>
         )}
       </div>
