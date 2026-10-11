@@ -30,9 +30,11 @@ export interface DiceTraySession {
 
 interface TabletopDiceTrayProps {
   session: DiceTraySession | null;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) => {
+export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session, isOpen = false, onClose }) => {
   // Idle Sandbox State
   const [sandboxFormula, setSandboxFormula] = useState('1d20+5');
   const [sandboxResult, setSandboxResult] = useState<{ total: number; breakdown: string; rolls: number[] } | null>(null);
@@ -257,8 +259,9 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
     };
 
     return (
-      <section className="relative overflow-hidden w-full bg-slate-950 border-2 border-amber-600/70 rounded-2xl p-4 sm:p-5 shadow-2xl shadow-amber-950/40 flex flex-col gap-4 animate-in fade-in duration-200">
-        <FantasyCornerBrackets className="w-5 h-5 text-amber-500" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150">
+        <section className="relative overflow-hidden w-full max-w-2xl bg-[#0f0a07] border-2 border-amber-600/80 rounded-2xl p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] flex flex-col gap-4 max-h-[92vh] overflow-y-auto animate-in fade-in duration-200">
+          <FantasyCornerBrackets className="w-5 h-5 text-amber-500" />
         {/* Subtle tabletop felt ambient background */}
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
@@ -912,34 +915,49 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
           </div>
         )}
       </section>
-    );
-  }
+    </div>
+  );
+}
 
   // -------------------------------------------------------------
-  // IDLE MODE: PERMANENT EMBEDDED TABLETOP DICE TRAY & PRACTICE SANDBOX
+  // IDLE MODE: TRAY DRAWER & SANDBOX ROLLER (TOGGLED VIA [D])
   // -------------------------------------------------------------
+  if (!isOpen) return null;
+
   return (
-    <section className="relative overflow-hidden w-full bg-slate-950 border-2 border-amber-600/70 rounded-2xl p-4 sm:p-5 shadow-2xl shadow-amber-950/40 flex flex-col gap-3.5">
-      <FantasyCornerBrackets className="w-5 h-5 text-amber-500" />
-      {/* Tabletop felt ambient background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
-        style={{ backgroundImage: `url(${ART_ASSETS.diceTray})` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/95 to-slate-950 pointer-events-none" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150">
+      <section className="relative overflow-hidden w-full max-w-2xl bg-[#0f0a07] border-2 border-amber-800/80 rounded-2xl p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] flex flex-col gap-3.5 max-h-[92vh] overflow-y-auto select-none">
+        <FantasyCornerBrackets className="w-5 h-5 text-amber-500" />
+        {/* Tabletop felt ambient background */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: `url(${ART_ASSETS.diceTray})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0f0a07]/80 via-[#0f0a07]/95 to-[#0f0a07] pointer-events-none" />
 
-      {/* Header */}
-      <div className="relative z-10 flex items-center justify-between pb-2.5 border-b border-amber-900/50">
-        <div className="flex items-center gap-2">
-          <Dices className="w-5 h-5 text-amber-400" />
-          <h2 className="text-sm sm:text-base font-fantasy font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 drop-shadow-sm">
-            Tabletop Dice Tray & Rules Practice Sandbox
-          </h2>
+        {/* Header */}
+        <div className="relative z-10 flex items-center justify-between pb-2.5 border-b border-amber-900/50">
+          <div className="flex items-center gap-2">
+            <Dices className="w-5 h-5 text-amber-400" />
+            <h2 className="text-sm sm:text-base font-fantasy font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 drop-shadow-sm">
+              Tabletop Dice Tray & Rules Practice Sandbox
+            </h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-fantasy font-black uppercase text-amber-100 bg-gradient-to-r from-emerald-800 to-emerald-950 border border-emerald-500/60 px-3 py-0.5 rounded-full shadow-md">
+              Ready for Action
+            </span>
+            {onClose && (
+              <button
+                onClick={onClose}
+                title="Close Dice Tray [Esc] or [D]"
+                className="p-1.5 rounded-lg hover:bg-slate-800 text-amber-400 hover:text-amber-200 transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
-        <span className="text-[11px] font-fantasy font-black uppercase text-amber-100 bg-gradient-to-r from-emerald-800 to-emerald-950 border border-emerald-500/60 px-3 py-0.5 rounded-full shadow-md">
-          Ready for Action
-        </span>
-      </div>
 
       {/* Interactive Polyhedral Dice Tray */}
       <div className="relative z-10">
@@ -1055,5 +1073,6 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
         </div>
       )}
     </section>
+    </div>
   );
 };

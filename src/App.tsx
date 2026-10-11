@@ -21,8 +21,10 @@ import { findPath } from './utils/pathfinding';
 
 import { Navbar } from './components/Navbar';
 import { BattleMap } from './components/BattleMap';
-import { CharacterSidebar } from './components/CharacterSidebar';
-import { CombatLog } from './components/CombatLog';
+import { TacticalActionBar } from './components/TacticalActionBar';
+import { CharacterDrawer } from './components/CharacterDrawer';
+import { CombatLogDrawer } from './components/CombatLogDrawer';
+import { CombatLogTicker } from './components/CombatLogTicker';
 import { ReactionModal } from './components/ReactionModal';
 import { CharacterImportModal } from './components/CharacterImportModal';
 import { ScenarioModal } from './components/ScenarioModal';
@@ -74,6 +76,11 @@ export function App() {
   const [isRestModalOpen, setIsRestModalOpen] = useState(false);
   const [isSpellPickerOpen, setIsSpellPickerOpen] = useState(false);
   const [isMapExportImportOpen, setIsMapExportImportOpen] = useState(false);
+
+  // Drawers (Off-Canvas Panels)
+  const [isCharDrawerOpen, setIsCharDrawerOpen] = useState(false);
+  const [isLogDrawerOpen, setIsLogDrawerOpen] = useState(false);
+  const [isDiceTrayOpen, setIsDiceTrayOpen] = useState(false);
 
   // Initialize encounter combatants
   const loadEncounter = (enc: EncounterPreset, customPlayer?: Combatant) => {
@@ -748,6 +755,106 @@ export function App() {
     });
   };
 
+  // Global Keyboard Hotkeys Engine
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Do not intercept hotkeys if typing in input/textarea/select
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+
+      // Escape: Close drawers or cancel current action targeting
+      if (e.key === 'Escape') {
+        if (isCharDrawerOpen) setIsCharDrawerOpen(false);
+        if (isLogDrawerOpen) setIsLogDrawerOpen(false);
+        if (isDiceTrayOpen) setIsDiceTrayOpen(false);
+        if (selectedAction) setSelectedAction(null);
+        return;
+      }
+
+      // Space: End Turn
+      if (e.code === 'Space' && isPlayerTurn) {
+        e.preventDefault();
+        handleEndTurn();
+        return;
+      }
+
+      // Hotkey Actions 1 to 7
+      if (/^[1-7]$/.test(e.key)) {
+        const slotIdx = parseInt(e.key, 10) - 1;
+        const allActions = [...player.actionDeck.actions, ...player.actionDeck.bonusActions];
+        const targetAction = allActions[slotIdx];
+        if (targetAction && isPlayerTurn) {
+          e.preventDefault();
+          if (targetAction.type === 'utility' || (targetAction.type === 'class_feature' && !targetAction.toHitMod && !targetAction.damageFormula)) {
+            handleExecuteUtilityAction(targetAction);
+          } else {
+            setSelectedAction((prev) => (prev?.id === targetAction.id ? null : targetAction));
+          }
+        }
+        return;
+      }
+
+      // Drawer Toggles
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        setIsCharDrawerOpen((prev) => !prev);
+        return;
+      }
+
+      if (e.key === 'l' || e.key === 'L') {
+        e.preventDefault();
+        setIsLogDrawerOpen((prev) => !prev);
+        return;
+      }
+
+      if (e.key === 'd' || e.key === 'D') {
+        e.preventDefault();
+        setIsDiceTrayOpen((prev) => !prev);
+        return;
+      }
+
+      if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        setIsRestModalOpen((prev) => !prev);
+        return;
+      }
+
+      if (e.key === 'h' || e.key === 'H' || e.key === '?') {
+        e.preventDefault();
+        setIsHelpModalOpen((prev) => !prev);
+        return;
+      }
+
+      if ((e.key === 'z' || e.key === 'Z') && turnHistory.length > 0) {
+        e.preventDefault();
+        handleRewindTurn();
+        return;
+      }
+
+      if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        setIsMapEditing((prev) => !prev);
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    isPlayerTurn,
+    player,
+    selectedAction,
+    turnHistory.length,
+    isCharDrawerOpen,
+    isLogDrawerOpen,
+    isDiceTrayOpen,
+  ]);
+
   return (
     <div 
       className="relative min-h-screen text-amber-50 flex flex-col font-sans selection:bg-amber-600/30 selection:text-amber-200"
@@ -785,23 +892,10 @@ export function App() {
         onOpenExportImport={() => setIsMapExportImportOpen(true)}
       />
 
-      {/* Main Tactical Workspace */}
-      <main className="flex-1 p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-[310px_1fr] xl:grid-cols-[350px_1fr] gap-4 max-w-[1600px] w-full mx-auto items-start">
-        {/* Left: Character Sheet & Action Deck */}
-        <div className="w-full shrink-0">
-          <CharacterSidebar
-            player={player}
-            selectedAction={selectedAction}
-            onSelectAction={setSelectedAction}
-            onExecuteUtilityAction={handleExecuteUtilityAction}
-            onOpenRestModal={() => setIsRestModalOpen(true)}
-            onOpenSpellPicker={() => setIsSpellPickerOpen(true)}
-          />
-        </div>
-
-        {/* Center / Right: Tactical Battlemap, Embedded Tabletop Dice Tray & Combat Ledger */}
-        <div className="flex flex-col gap-4 min-w-0 w-full">
-          {/* Battlemap Viewport */}
+      {/* Main Tactical Workspace (Spacious, Cinematic RPG Stage) */}
+      <main className="flex-1 p-2 sm:p-3 flex flex-col justify-between max-w-[1500px] w-full mx-auto relative">
+        {/* Centerpiece: Expansive Tactical Battlemap */}
+        <div className="flex-1 w-full flex items-center justify-center min-h-0">
           <BattleMap
             gridWidth={activeEncounter.gridWidth}
             gridHeight={activeEncounter.gridHeight}
@@ -815,14 +909,57 @@ export function App() {
             activeBrush={activeBrush}
             onCellPaint={handleCellPaint}
           />
+        </div>
 
-          {/* Embedded Tabletop Dice Tray (Permanent Main Window Centerpiece) */}
-          <TabletopDiceTray session={diceSession} />
-
-          {/* Combat Log */}
-          <CombatLog logs={logs} />
+        {/* Bottom Tactical Action Dock (Baldur's Gate 3 Style) */}
+        <div className="w-full mt-2.5">
+          <CombatLogTicker logs={logs} onOpenDrawer={() => setIsLogDrawerOpen(true)} />
+          <TacticalActionBar
+            player={player}
+            selectedAction={selectedAction}
+            onSelectAction={setSelectedAction}
+            onExecuteUtilityAction={handleExecuteUtilityAction}
+            onEndTurn={handleEndTurn}
+            isPlayerTurn={isPlayerTurn}
+            onToggleCharDrawer={() => setIsCharDrawerOpen(!isCharDrawerOpen)}
+            isCharDrawerOpen={isCharDrawerOpen}
+            onToggleLogDrawer={() => setIsLogDrawerOpen(!isLogDrawerOpen)}
+            isLogDrawerOpen={isLogDrawerOpen}
+            onToggleDiceTray={() => setIsDiceTrayOpen(!isDiceTrayOpen)}
+            isDiceTrayOpen={isDiceTrayOpen}
+            onOpenRestModal={() => setIsRestModalOpen(true)}
+            onOpenSpellPicker={() => setIsSpellPickerOpen(true)}
+            onOpenHelpModal={() => setIsHelpModalOpen(true)}
+          />
         </div>
       </main>
+
+      {/* Slide-out Character Sheet Drawer [C] */}
+      <CharacterDrawer
+        isOpen={isCharDrawerOpen}
+        onClose={() => setIsCharDrawerOpen(false)}
+        player={player}
+        selectedAction={selectedAction}
+        onSelectAction={setSelectedAction}
+        onExecuteUtilityAction={handleExecuteUtilityAction}
+        onOpenRestModal={() => setIsRestModalOpen(true)}
+        onOpenSpellPicker={() => setIsSpellPickerOpen(true)}
+        onOpenCharacterModal={() => setIsCharModalOpen(true)}
+      />
+
+      {/* Slide-out Combat Chronicle & Log Drawer [L] */}
+      <CombatLogDrawer
+        isOpen={isLogDrawerOpen}
+        onClose={() => setIsLogDrawerOpen(false)}
+        logs={logs}
+      />
+
+      {/* Focused Tabletop Dice Tray (Active Action Roll or Sandbox Drawer [D]) */}
+      <TabletopDiceTray
+        session={diceSession}
+        isOpen={isDiceTrayOpen}
+        onClose={() => setIsDiceTrayOpen(false)}
+      />
 
       {/* Battlemap Export & Import Modal */}
       <MapExportImportModal

@@ -102,30 +102,24 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Action Controls */}
+      {/* Action Controls & Hotkey Hints */}
       <div className="relative z-10 flex items-center gap-2">
-        {/* Rewind Turn Button */}
+        {/* Hotkeys Quick Cheat-Sheet */}
+        <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/40 border border-amber-900/40 text-[10px] font-mono text-amber-300/80">
+          Hotkeys: <span className="text-amber-200 font-bold">[1-7]</span> Actions · <span className="text-amber-200 font-bold">[Space]</span> End Turn · <span className="text-amber-200 font-bold">[C]</span> Sheet · <span className="text-amber-200 font-bold">[L]</span> Log · <span className="text-amber-200 font-bold">[D]</span> Dice
+        </span>
+
+        {/* Rewind Turn Button [Z] */}
         <button
           onClick={onRewindTurn}
           disabled={!canRewind}
-          title="Rewind to start of previous turn (Decision Forking)"
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-[#140e0a] hover:bg-[#1f1610] disabled:opacity-40 disabled:hover:bg-[#140e0a] text-amber-200 border border-amber-900/40 transition shadow-sm cursor-pointer"
+          title="Rewind to start of previous turn [Z] (Decision Forking)"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-xl bg-[#140e0a] hover:bg-[#1f1610] disabled:opacity-40 disabled:hover:bg-[#140e0a] text-amber-200 border border-amber-900/40 transition shadow-sm cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
           <span className="hidden sm:inline font-fantasy text-[11px]">Rewind</span>
+          <span className="text-[9px] font-mono opacity-70 hidden sm:inline">[Z]</span>
         </button>
-
-        {/* End Turn (High-Fantasy Burnished Gold Button) */}
-        <button
-          onClick={onEndTurn}
-          disabled={!isPlayerTurn}
-          className="btn-fantasy-gold flex items-center gap-1.5 px-4 py-1.5 text-xs font-extrabold font-fantasy rounded-xl shadow-lg transition active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
-        >
-          <Play className="w-3.5 h-3.5 fill-current" />
-          <span>End Turn</span>
-        </button>
-
-        <div className="h-5 w-px bg-amber-900/40 mx-1 hidden sm:block" />
 
         {/* Map Cartographer Editor */}
         <button
