@@ -857,7 +857,7 @@ export function App() {
 
   return (
     <div 
-      className="relative min-h-screen text-amber-50 flex flex-col font-sans selection:bg-amber-600/30 selection:text-amber-200"
+      className="relative h-screen max-h-screen overflow-hidden text-amber-50 flex flex-col font-sans selection:bg-amber-600/30 selection:text-amber-200"
       style={{
         backgroundImage: `radial-gradient(circle at 50% 25%, rgba(20, 14, 9, 0.45) 0%, rgba(10, 6, 4, 0.85) 100%), url(${ART_ASSETS.darkWood})`,
         backgroundSize: 'cover',
@@ -892,10 +892,10 @@ export function App() {
         onOpenExportImport={() => setIsMapExportImportOpen(true)}
       />
 
-      {/* Main Tactical Workspace (Spacious, Cinematic RPG Stage) */}
-      <main className="flex-1 px-2 sm:px-4 md:px-6 py-2 flex flex-col justify-between max-w-[1850px] 2xl:max-w-[2100px] w-full mx-auto relative">
-        {/* Centerpiece: Expansive Tactical Battlemap */}
-        <div className="flex-1 w-full flex items-center justify-center min-h-0">
+      {/* Main Tactical Workspace (Viewport-Locked RPG Stage, Zero Scrolling) */}
+      <main className="flex-1 min-h-0 px-2 sm:px-3 py-1 flex flex-col justify-between max-w-[1950px] w-full mx-auto relative overflow-hidden">
+        {/* Centerpiece: Tactical Battlemap fitting all available vertical & horizontal space */}
+        <div className="flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden">
           <BattleMap
             gridWidth={activeEncounter.gridWidth}
             gridHeight={activeEncounter.gridHeight}
@@ -911,8 +911,8 @@ export function App() {
           />
         </div>
 
-        {/* Bottom Tactical Action Dock (Baldur's Gate 3 Style) */}
-        <div className="w-full mt-2.5">
+        {/* Bottom Tactical Action Dock (Always Visible, Pinned to Viewport, No Scrolling) */}
+        <div className="shrink-0 w-full mt-1">
           <CombatLogTicker logs={logs} onOpenDrawer={() => setIsLogDrawerOpen(true)} />
           <TacticalActionBar
             player={player}

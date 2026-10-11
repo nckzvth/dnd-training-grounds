@@ -42,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   isMapEditing,
 }) => {
   return (
-    <header className="relative bg-[#0d0906]/98 border-b border-amber-900/50 shadow-2xl px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 overflow-hidden">
+    <header className="relative shrink-0 bg-[#0d0906]/98 border-b border-amber-900/50 shadow-2xl px-3 sm:px-5 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 overflow-hidden">
       {/* Ambient tavern oak wood texture */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"

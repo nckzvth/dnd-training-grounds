@@ -138,10 +138,10 @@ export const BattleMap: React.FC<BattleMapProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col bg-[#0f0b08] select-none rounded-2xl border-2 border-amber-900/60 shadow-2xl overflow-hidden relative">
+    <div className="w-full h-full max-h-full flex flex-col bg-[#0f0b08] select-none rounded-xl border border-amber-900/60 shadow-2xl overflow-hidden relative">
       <FantasyCornerBrackets className="w-5 h-5 text-amber-600/50" />
       {/* Top Map Action Banner */}
-      <div className="px-4 py-2.5 bg-gradient-to-r from-[#18110c]/95 via-[#130d09]/95 to-[#18110c]/95 border-b border-amber-900/40 flex flex-wrap items-center justify-between gap-2 text-xs text-amber-100">
+      <div className="shrink-0 px-3.5 py-1.5 bg-gradient-to-r from-[#18110c]/95 via-[#130d09]/95 to-[#18110c]/95 border-b border-amber-900/40 flex flex-wrap items-center justify-between gap-2 text-xs text-amber-100">
         <div className="flex items-center gap-2">
           {selectedAction ? (
             <span className="flex items-center gap-2 text-amber-200 font-bold font-fantasy animate-pulse">
@@ -169,20 +169,20 @@ export const BattleMap: React.FC<BattleMapProps> = ({
 
       {/* Visual Map Legend (Explains squares and tokens) */}
       {showLegend && (
-        <div className="px-4 py-2 bg-[#120c08]/95 border-b border-amber-900/40 flex flex-wrap items-center gap-3.5 text-[11px] text-amber-200/70 font-medium">
+        <div className="shrink-0 px-3 py-1 bg-[#120c08]/95 border-b border-amber-900/40 flex flex-wrap items-center gap-3 text-[11px] text-amber-200/70 font-medium">
           <span className="font-bold text-amber-300/90 flex items-center gap-1 font-fantasy">
             <Info className="w-3.5 h-3.5 text-amber-400" /> Tabletop Key:
           </span>
           <span className="flex items-center gap-1.5 text-stone-300">
-            <span className="w-3 h-3 rounded-sm bg-stone-900 border border-stone-700 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-stone-900 border border-stone-700 inline-block" />
             Stone Rampart (Total Cover)
           </span>
           <span className="flex items-center gap-1.5 text-amber-300/80">
-            <span className="w-3 h-3 rounded-sm bg-amber-950/80 border border-amber-700/80 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-amber-950/80 border border-amber-700/80 inline-block" />
             Timber Crates (+2 AC Half Cover)
           </span>
           <span className="flex items-center gap-1.5 text-amber-200/70">
-            <span className="w-3 h-3 rounded-sm bg-stone-900 border border-amber-900/60 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-sm bg-stone-900 border border-amber-900/60 inline-block" />
             Rubble (2x Movement Cost)
           </span>
           <span className="flex items-center gap-1.5 text-sky-300">
@@ -196,12 +196,12 @@ export const BattleMap: React.FC<BattleMapProps> = ({
         </div>
       )}
 
-      {/* SVG Canvas Map Area (Expansive Tactical Viewport) */}
-      <div className="relative w-full flex items-center justify-center p-2 sm:p-4 bg-slate-950/95 overflow-x-auto min-h-[460px] 2xl:min-h-[540px]">
-        <div className="w-full max-w-[1700px] 2xl:max-w-[1950px] mx-auto flex items-center justify-center">
+      {/* SVG Canvas Map Area (Expansive Tactical Viewport that scales perfectly) */}
+      <div className="relative flex-1 min-h-0 w-full flex items-center justify-center p-1 sm:p-2 bg-slate-950/95 overflow-hidden">
+        <div className="w-full h-full max-h-full flex items-center justify-center">
           <svg
             viewBox={`0 0 ${gridWidth * CELL_SIZE} ${gridHeight * CELL_SIZE}`}
-            className="w-full h-auto max-h-[73vh] 2xl:max-h-[79vh] block rounded-xl border-2 border-amber-900/60 shadow-2xl bg-slate-900 object-contain"
+            className="w-full h-full max-w-full max-h-full block rounded-xl border border-amber-900/60 shadow-2xl bg-slate-900 object-contain"
             onMouseLeave={() => setHoveredCell(null)}
           >
             <defs>
@@ -525,7 +525,7 @@ export const BattleMap: React.FC<BattleMapProps> = ({
       </div>
 
       {/* Detailed Interactive Hover Tooltip Bar */}
-      <div className="px-4 py-2.5 bg-slate-950/95 border-t-2 border-amber-800/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="shrink-0 px-3.5 py-1.5 bg-slate-950/95 border-t border-amber-800/60 flex flex-wrap items-center justify-between gap-2.5 text-xs">
         {hoveredCell ? (
           <div className="flex flex-wrap items-center gap-3 text-amber-100">
             {/* Tile Coordinate & Type */}
