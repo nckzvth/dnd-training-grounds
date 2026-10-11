@@ -11,7 +11,8 @@ import {
   HelpCircle,
   Box,
   Layers,
-  Info
+  Info,
+  Sparkles
 } from 'lucide-react';
 
 import { MapEditorBrush } from './MapEditorToolbar';
@@ -30,6 +31,8 @@ interface BattleMapProps {
   isEditingMap?: boolean;
   activeBrush?: MapEditorBrush;
   onCellPaint?: (x: number, y: number, brush: MapEditorBrush) => void;
+  onToggleWizard?: () => void;
+  isWizardOpen?: boolean;
 }
 
 const CELL_SIZE = 56; // Grid unit dimension
@@ -46,6 +49,8 @@ export const BattleMap: React.FC<BattleMapProps> = ({
   isEditingMap = false,
   activeBrush = 'wall',
   onCellPaint,
+  onToggleWizard,
+  isWizardOpen,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [showLegend, setShowLegend] = useState(true);
@@ -157,6 +162,22 @@ export const BattleMap: React.FC<BattleMapProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {onToggleWizard && (
+            <button
+              onClick={onToggleWizard}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition shadow-sm cursor-pointer ${
+                isWizardOpen
+                  ? 'bg-purple-900/80 border-purple-500/70 text-purple-200'
+                  : 'bg-[#1a130e] hover:bg-[#251b14] border-amber-900/40 text-amber-200/80'
+              }`}
+              title="Toggle Tactical Wizard action tutor [W]"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              <span className="font-fantasy">Wizard</span>
+              <span className="text-[9px] font-mono opacity-70">[W]</span>
+            </button>
+          )}
+
           <button
             onClick={() => setShowLegend(!showLegend)}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1a130e] hover:bg-[#251b14] text-[11px] font-semibold text-amber-200/80 border border-amber-900/40 transition shadow-sm cursor-pointer"

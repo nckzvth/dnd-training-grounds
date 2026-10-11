@@ -35,6 +35,7 @@ import { RestModal } from './components/RestModal';
 import { SpellPickerModal } from './components/SpellPickerModal';
 import { MapEditorToolbar, MapEditorBrush } from './components/MapEditorToolbar';
 import { MapExportImportModal } from './components/MapExportImportModal';
+import { TacticalWizard } from './components/TacticalWizard';
 import { ART_ASSETS } from './utils/artAssets';
 
 export function App() {
@@ -43,6 +44,9 @@ export function App() {
   const [player, setPlayer] = useState<Combatant>(JSON.parse(JSON.stringify(PRESET_CHARACTERS.arty)));
   const [combatants, setCombatants] = useState<Combatant[]>([]);
   const [gridCells, setGridCells] = useState<GridCell[]>([]);
+
+  // Tactical Wizard Action Tutor [W]
+  const [isWizardOpen, setIsWizardOpen] = useState(true);
 
   // Turn management
   const [currentRound, setCurrentRound] = useState(1);
@@ -836,6 +840,12 @@ export function App() {
         return;
       }
 
+      if (e.key === 'w' || e.key === 'W') {
+        e.preventDefault();
+        setIsWizardOpen((prev) => !prev);
+        return;
+      }
+
       if (e.key === 'm' || e.key === 'M') {
         e.preventDefault();
         setIsMapEditing((prev) => !prev);
@@ -880,6 +890,8 @@ export function App() {
         isPlayerTurn={isPlayerTurn}
         onToggleMapEditor={() => setIsMapEditing(!isMapEditing)}
         isMapEditing={isMapEditing}
+        onToggleWizard={() => setIsWizardOpen(!isWizardOpen)}
+        isWizardOpen={isWizardOpen}
       />
 
       {/* Map Sandbox Editor Toolbar (Conditional) */}
@@ -894,6 +906,21 @@ export function App() {
 
       {/* Main Tactical Workspace (Viewport-Locked RPG Stage, Zero Scrolling) */}
       <main className="flex-1 min-h-0 px-2 sm:px-3 py-1 flex flex-col justify-between max-w-[1950px] w-full mx-auto relative overflow-hidden">
+        {/* Floating Tactical Wizard Action Tutor [W] */}
+        <TacticalWizard
+          isOpen={isWizardOpen}
+          onClose={() => setIsWizardOpen(false)}
+          activeEncounter={activeEncounter}
+          player={player}
+          combatants={combatants}
+          selectedAction={selectedAction}
+          onSelectAction={setSelectedAction}
+          onExecuteUtilityAction={handleExecuteUtilityAction}
+          onEndTurn={handleEndTurn}
+          currentRound={currentRound}
+          isPlayerTurn={isPlayerTurn}
+        />
+
         {/* Centerpiece: Tactical Battlemap fitting all available vertical & horizontal space */}
         <div className="flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden">
           <BattleMap
@@ -908,6 +935,8 @@ export function App() {
             isEditingMap={isMapEditing}
             activeBrush={activeBrush}
             onCellPaint={handleCellPaint}
+            onToggleWizard={() => setIsWizardOpen(!isWizardOpen)}
+            isWizardOpen={isWizardOpen}
           />
         </div>
 

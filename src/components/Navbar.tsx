@@ -7,7 +7,8 @@ import {
   MapPin,
   HelpCircle,
   Wrench,
-  Compass
+  Compass,
+  Sparkles
 } from 'lucide-react';
 import { EncounterPreset } from '../data/presetEncounters';
 import { ART_ASSETS } from '../utils/artAssets';
@@ -25,6 +26,8 @@ interface NavbarProps {
   isPlayerTurn: boolean;
   onToggleMapEditor: () => void;
   isMapEditing: boolean;
+  onToggleWizard?: () => void;
+  isWizardOpen?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -40,6 +43,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   isPlayerTurn,
   onToggleMapEditor,
   isMapEditing,
+  onToggleWizard,
+  isWizardOpen = true,
 }) => {
   return (
     <header className="relative shrink-0 bg-[#0d0906]/98 border-b border-amber-900/50 shadow-2xl px-3 sm:px-5 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 overflow-hidden">
@@ -106,8 +111,25 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="relative z-10 flex items-center gap-2">
         {/* Hotkeys Quick Cheat-Sheet */}
         <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/40 border border-amber-900/40 text-[10px] font-mono text-amber-300/80">
-          Hotkeys: <span className="text-amber-200 font-bold">[1-7]</span> Actions · <span className="text-amber-200 font-bold">[Space]</span> End Turn · <span className="text-amber-200 font-bold">[C]</span> Sheet · <span className="text-amber-200 font-bold">[L]</span> Log · <span className="text-amber-200 font-bold">[D]</span> Dice
+          Hotkeys: <span className="text-amber-200 font-bold">[1-8]</span> Actions · <span className="text-amber-200 font-bold">[Space]</span> End Turn · <span className="text-purple-300 font-bold">[W]</span> Wizard · <span className="text-amber-200 font-bold">[C]</span> Sheet · <span className="text-amber-200 font-bold">[L]</span> Log · <span className="text-amber-200 font-bold">[D]</span> Dice
         </span>
+
+        {/* Tactical Wizard Action Tutor [W] */}
+        {onToggleWizard && (
+          <button
+            onClick={onToggleWizard}
+            title="Toggle Tactical Wizard action guidance and scenario objectives [W]"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl border transition cursor-pointer ${
+              isWizardOpen
+                ? 'bg-gradient-to-r from-purple-900/90 to-indigo-950/90 text-purple-200 border-purple-500/80 shadow-md shadow-purple-950/60'
+                : 'bg-[#140e0a] hover:bg-[#1f1610] text-purple-300/80 border-amber-900/40'
+            }`}
+          >
+            <Sparkles className={`w-3.5 h-3.5 ${isWizardOpen ? 'text-purple-300 animate-pulse' : 'text-purple-400'}`} />
+            <span className="hidden sm:inline font-fantasy text-[11px]">Wizard</span>
+            <span className="text-[9px] font-mono opacity-80">[W]</span>
+          </button>
+        )}
 
         {/* Rewind Turn Button [Z] */}
         <button
