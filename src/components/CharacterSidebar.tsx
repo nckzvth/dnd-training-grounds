@@ -15,10 +15,9 @@ import {
   BookOpen,
   ChevronDown,
   ChevronRight,
-  Flame,
-  Wand2
 } from 'lucide-react';
 import { ART_ASSETS, getTokenImage } from '../utils/artAssets';
+import { FantasyCornerBrackets, WaxSealBadge } from './FantasyDecorations';
 
 interface CharacterSidebarProps {
   player: Combatant;
@@ -43,13 +42,11 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
   const hpPercent = Math.max(0, Math.min(100, (player.vitals.currentHp / player.vitals.maxHp) * 100));
 
   const handleActionClick = (action: ActionItem) => {
-    // If utility (Dash, Dodge, Cunning Dash, etc.), execute directly
     if (action.type === 'utility' || (action.type === 'class_feature' && !action.toHitMod && !action.damageFormula)) {
       onExecuteUtilityAction(action);
       return;
     }
 
-    // If attack / spell with range, toggle targeting
     if (selectedAction?.id === action.id) {
       onSelectAction(null);
     } else {
@@ -96,32 +93,44 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
   ];
 
   return (
-    <div className="relative overflow-hidden w-full flex flex-col gap-3.5 bg-slate-950 border-2 border-amber-800/70 rounded-2xl p-3.5 sm:p-4 shadow-2xl">
-      {/* Ambient tavern oak wood texture */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none mix-blend-overlay"
-        style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/95 to-slate-950 pointer-events-none" />
+    <div 
+      className="relative flex flex-col gap-3.5 rounded-2xl border-4 border-amber-900/90 p-3 sm:p-4 shadow-2xl select-none"
+      style={{
+        backgroundImage: `radial-gradient(circle at 50% 10%, rgba(26, 18, 12, 0.94) 0%, rgba(15, 10, 6, 0.98) 100%), url(${ART_ASSETS.darkWood})`,
+        backgroundSize: 'cover',
+        boxShadow: '0 15px 35px rgba(0,0,0,0.8), inset 0 0 40px rgba(0,0,0,0.7)'
+      }}
+    >
+      <FantasyCornerBrackets className="w-5 h-5 text-amber-500/90" />
 
-      {/* Vitals Card (Adventurer Folio) */}
-      <div className="relative z-10 bg-slate-900/95 p-3.5 rounded-xl border border-amber-700/60 shadow-lg">
-        <div className="flex items-center gap-3">
+      {/* Vitals Card (Actual Illuminated Parchment Sheet) */}
+      <div 
+        className="relative rounded-xl border-2 border-amber-800/80 p-3.5 shadow-xl overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
+          backgroundSize: 'cover',
+          color: '#2c170a',
+          boxShadow: 'inset 0 0 25px rgba(120, 53, 15, 0.25), 0 6px 15px rgba(0,0,0,0.5)'
+        }}
+      >
+        <FantasyCornerBrackets className="w-4 h-4 text-amber-800/70" />
+
+        <div className="relative z-10 flex items-center gap-3">
           <div className="relative group shrink-0">
             <img
               src={getTokenImage(player)}
               alt={player.name}
-              className="w-14 h-14 rounded-full border-2 border-amber-400 shadow-md shadow-amber-500/30 object-cover"
+              className="w-14 h-14 rounded-full border-2 border-amber-600 shadow-md shadow-amber-950/40 object-cover"
             />
-            <div className="absolute -inset-0.5 rounded-full bg-amber-400/20 blur pointer-events-none" />
+            <div className="absolute -inset-0.5 rounded-full bg-amber-500/30 blur pointer-events-none" />
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h2 className="font-fantasy text-base font-extrabold text-amber-100 flex items-center gap-1.5 truncate">
+              <h2 className="font-fantasy text-base sm:text-lg font-black text-amber-950 flex items-center gap-1.5 truncate drop-shadow-sm">
                 {player.name}
                 {player.spatial.isHiding && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-900/80 text-purple-200 border border-purple-500 flex items-center gap-1 font-sans">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-950 text-purple-200 border border-purple-600 flex items-center gap-1 font-sans">
                     <EyeOff className="w-2.5 h-2.5" /> Hidden
                   </span>
                 )}
@@ -129,81 +138,81 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
               <button
                 onClick={onOpenRestModal}
                 title="Take a Short or Long Rest to replenish hit points and spell slots"
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-600/60 text-xs font-semibold transition shrink-0 ml-1 shadow-sm cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-800 to-amber-950 hover:from-amber-700 hover:to-amber-900 text-amber-100 border border-amber-700 text-xs font-fantasy font-bold transition shadow-sm cursor-pointer ml-1"
               >
-                <Moon className="w-3.5 h-3.5 text-amber-400" />
-                <span className="font-fantasy text-[11px]">Rest</span>
+                <Moon className="w-3.5 h-3.5 text-amber-300" />
+                <span>Rest</span>
               </button>
             </div>
-            <div className="text-xs text-amber-400 font-medium truncate font-fantasy">
+            <div className="text-xs text-amber-900 font-bold font-fantasy truncate">
               {player.race} · {player.archetype}
             </div>
           </div>
         </div>
 
-        {/* HP Bar (Illuminated Arcane Vitality Meter) */}
-        <div className="mt-3">
-          <div className="flex justify-between text-xs font-semibold mb-1">
-            <span className="flex items-center gap-1 text-rose-400 font-fantasy">
+        {/* HP Bar (Illuminated Health Vial) */}
+        <div className="relative z-10 mt-3">
+          <div className="flex justify-between text-xs font-bold mb-1 text-amber-950 font-fantasy">
+            <span className="flex items-center gap-1 text-rose-800">
               <Heart className="w-3.5 h-3.5 fill-current" /> Vitality HP
             </span>
-            <span className="font-mono text-amber-100 font-bold">
+            <span className="font-mono text-amber-950 font-black">
               {player.vitals.currentHp} / {player.vitals.maxHp}
             </span>
           </div>
-          <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800 shadow-inner">
+          <div className="w-full h-3 bg-amber-950/20 rounded-full overflow-hidden border border-amber-900/40 shadow-inner">
             <div
               className={`h-full transition-all duration-300 ${
-                hpPercent > 50 ? 'bg-gradient-to-r from-emerald-600 to-emerald-400' : 
-                hpPercent > 25 ? 'bg-gradient-to-r from-amber-600 to-amber-400' : 
-                'bg-gradient-to-r from-rose-600 to-rose-400'
+                hpPercent > 50 ? 'bg-gradient-to-r from-emerald-700 to-emerald-500' : 
+                hpPercent > 25 ? 'bg-gradient-to-r from-amber-700 to-amber-500' : 
+                'bg-gradient-to-r from-rose-800 to-rose-600'
               }`}
               style={{ width: `${hpPercent}%` }}
             />
           </div>
         </div>
 
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-amber-900/40 text-center text-xs">
-          <div className="bg-slate-950/80 p-2 rounded-xl border border-slate-800">
-            <div className="text-[10px] text-amber-300/80 uppercase font-bold font-fantasy">Armor Class</div>
-            <div className="text-sm font-bold text-slate-100 flex items-center justify-center gap-1 font-mono mt-0.5">
-              <Shield className="w-3.5 h-3.5 text-sky-400" />
+        {/* Quick Stats Grid (Parchment Tablets) */}
+        <div className="relative z-10 grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-amber-900/30 text-center text-xs">
+          <div className="bg-amber-950/10 p-2 rounded-xl border border-amber-900/30 shadow-inner">
+            <div className="text-[10px] text-amber-900 uppercase font-black font-fantasy">Armor Class</div>
+            <div className="text-sm font-black text-amber-950 flex items-center justify-center gap-1 font-mono mt-0.5">
+              <Shield className="w-3.5 h-3.5 text-sky-800" />
               {player.vitals.baseAc}
             </div>
           </div>
-          <div className="bg-slate-950/80 p-2 rounded-xl border border-slate-800">
-            <div className="text-[10px] text-amber-300/80 uppercase font-bold font-fantasy">Speed</div>
-            <div className="text-sm font-bold text-slate-100 flex items-center justify-center gap-1 font-mono mt-0.5">
-              <Footprints className="w-3.5 h-3.5 text-amber-400" />
+          <div className="bg-amber-950/10 p-2 rounded-xl border border-amber-900/30 shadow-inner">
+            <div className="text-[10px] text-amber-900 uppercase font-black font-fantasy">Speed</div>
+            <div className="text-sm font-black text-amber-950 flex items-center justify-center gap-1 font-mono mt-0.5">
+              <Footprints className="w-3.5 h-3.5 text-amber-800" />
               {player.vitals.speedFt} ft
             </div>
           </div>
-          <div className="bg-slate-950/80 p-2 rounded-xl border border-slate-800">
-            <div className="text-[10px] text-amber-300/80 uppercase font-bold font-fantasy">DEX / STR</div>
-            <div className="text-xs font-bold text-amber-200 font-mono mt-0.5">
+          <div className="bg-amber-950/10 p-2 rounded-xl border border-amber-900/30 shadow-inner">
+            <div className="text-[10px] text-amber-900 uppercase font-black font-fantasy">DEX / STR</div>
+            <div className="text-xs font-black text-amber-950 font-mono mt-0.5">
               +{Math.floor((player.attributes.dex - 10) / 2)} / +{Math.floor((player.attributes.str - 10) / 2)}
             </div>
           </div>
         </div>
 
         {/* Hit Dice & Spellcasting Metrics */}
-        <div className="mt-2.5 pt-2 border-t border-amber-900/40 space-y-2">
+        <div className="relative z-10 mt-2.5 pt-2 border-t border-amber-900/30 space-y-2">
           {/* Hit Dice Tracker */}
-          <div className="flex items-center justify-between text-xs bg-slate-950/90 px-3 py-1.5 rounded-xl border border-amber-800/40">
+          <div className="flex items-center justify-between text-xs bg-amber-950/15 px-3 py-1.5 rounded-xl border border-amber-900/30">
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-amber-400/80 font-bold uppercase font-fantasy">Hit Dice:</span>
-              <span className="font-mono font-bold text-amber-300">
+              <span className="text-[10px] text-amber-950 font-black uppercase font-fantasy">Hit Dice:</span>
+              <span className="font-mono font-black text-amber-950">
                 {(player.vitals.hitDiceCurrent ?? player.vitals.hitDiceMax ?? 3)}/{(player.vitals.hitDiceMax ?? 3)} {(player.vitals.hitDiceDie ?? 'd8')}
               </span>
               <div className="flex items-center gap-1 ml-2">
                 {Array.from({ length: (player.vitals.hitDiceMax ?? 3) }).map((_, i) => (
                   <span
                     key={i}
-                    className={`w-2 h-2 rounded-full ${
+                    className={`w-2.5 h-2.5 rounded-full ${
                       i < (player.vitals.hitDiceCurrent ?? player.vitals.hitDiceMax ?? 3)
-                        ? 'bg-amber-400 shadow-sm shadow-amber-400/50'
-                        : 'bg-slate-800 border border-slate-700'
+                        ? 'bg-amber-600 shadow-sm shadow-amber-900/50 border border-amber-800'
+                        : 'bg-amber-950/20 border border-amber-900/40'
                     }`}
                   />
                 ))}
@@ -211,17 +220,17 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
             </div>
             <button
               onClick={onOpenRestModal}
-              className="text-[10px] text-amber-400 hover:text-amber-200 font-semibold underline font-fantasy cursor-pointer"
+              className="text-[10px] text-amber-900 hover:text-amber-950 font-black underline font-fantasy cursor-pointer"
             >
-              Recover
+              Short Rest
             </button>
           </div>
 
           {/* Spell Save DC & Attack Mod */}
           <div className="grid grid-cols-2 gap-2 text-center text-xs">
-            <div className="bg-slate-950/80 px-2 py-1.5 rounded-xl border border-indigo-900/50">
-              <span className="text-[9px] text-indigo-300 uppercase font-bold font-fantasy block">Spell Save DC</span>
-              <span className="font-mono font-bold text-indigo-300 text-xs">
+            <div className="bg-amber-950/10 px-2 py-1.5 rounded-xl border border-amber-900/30">
+              <span className="text-[9px] text-amber-900 uppercase font-black font-fantasy block">Spell Save DC</span>
+              <span className="font-mono font-black text-amber-950 text-xs">
                 DC {8 + 2 + Math.max(
                   Math.floor((player.attributes.int - 10) / 2),
                   Math.floor((player.attributes.wis - 10) / 2),
@@ -229,9 +238,9 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                 )}
               </span>
             </div>
-            <div className="bg-slate-950/80 px-2 py-1.5 rounded-xl border border-indigo-900/50">
-              <span className="text-[9px] text-indigo-300 uppercase font-bold font-fantasy block">Spell Attack</span>
-              <span className="font-mono font-bold text-indigo-300 text-xs">
+            <div className="bg-amber-950/10 px-2 py-1.5 rounded-xl border border-amber-900/30">
+              <span className="text-[9px] text-amber-900 uppercase font-black font-fantasy block">Spell Attack</span>
+              <span className="font-mono font-black text-amber-950 text-xs">
                 +{2 + Math.max(
                   Math.floor((player.attributes.int - 10) / 2),
                   Math.floor((player.attributes.wis - 10) / 2),
@@ -244,7 +253,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       </div>
 
       {/* Action Economy Ledger */}
-      <div className="relative z-10 bg-slate-900/95 p-3 rounded-xl border border-amber-700/60 shadow-lg">
+      <div className="relative bg-slate-950/90 p-3 rounded-xl border border-amber-700/60 shadow-lg">
         <div className="text-[11px] font-fantasy uppercase tracking-wider font-bold text-amber-300 mb-2 flex items-center justify-between">
           <span>Action Economy Ledger</span>
           <span className="text-[10px] text-cyan-400 font-mono">Turn Budget</span>
@@ -252,7 +261,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 
         <div className="grid grid-cols-2 gap-2 text-xs">
           {/* Movement */}
-          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
             <div className="flex items-center gap-1.5">
               <Footprints className="w-3.5 h-3.5 text-cyan-400" />
               <span className="text-amber-100 font-medium">Movement</span>
@@ -266,7 +275,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           <div className={`flex items-center justify-between p-2 rounded-xl border transition-colors ${
             player.budget.actionAvailable 
               ? 'bg-emerald-950/40 border-emerald-600/70 text-emerald-300' 
-              : 'bg-slate-950/60 border-slate-800 text-slate-500'
+              : 'bg-slate-900/60 border-slate-800 text-slate-500'
           }`}>
             <div className="flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5" />
@@ -281,7 +290,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           <div className={`flex items-center justify-between p-2 rounded-xl border transition-colors ${
             player.budget.bonusActionAvailable 
               ? 'bg-amber-950/40 border-amber-600/70 text-amber-300' 
-              : 'bg-slate-950/60 border-slate-800 text-slate-500'
+              : 'bg-slate-900/60 border-slate-800 text-slate-500'
           }`}>
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
@@ -296,7 +305,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           <div className={`flex items-center justify-between p-2 rounded-xl border transition-colors ${
             player.budget.reactionAvailable 
               ? 'bg-purple-950/40 border-purple-600/70 text-purple-300' 
-              : 'bg-slate-950/60 border-slate-800 text-slate-500'
+              : 'bg-slate-900/60 border-slate-800 text-slate-500'
           }`}>
             <div className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" />
@@ -310,12 +319,12 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       </div>
 
       {/* Navigation Tabs: Combat Deck vs 5e Rules */}
-      <div className="relative z-10 flex gap-1.5 border-b border-amber-800/40 pb-1 text-xs font-semibold">
+      <div className="relative flex gap-1.5 border-b border-amber-800/40 pb-1 text-xs font-semibold">
         <button
           onClick={() => setActiveTab('actions')}
           className={`flex-1 py-1.5 text-center rounded-xl font-fantasy transition ${
             activeTab === 'actions'
-              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+              ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-sm'
               : 'text-amber-200/60 hover:text-amber-200'
           }`}
         >
@@ -325,7 +334,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           onClick={() => setActiveTab('rules')}
           className={`flex-1 py-1.5 text-center rounded-xl font-fantasy transition flex items-center justify-center gap-1.5 ${
             activeTab === 'rules'
-              ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40'
+              ? 'bg-indigo-500/25 text-indigo-300 border border-indigo-500/50 shadow-sm'
               : 'text-amber-200/60 hover:text-amber-200'
           }`}
         >
@@ -333,27 +342,27 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
         </button>
       </div>
 
-      {/* TAB 1: ACTIONS & SPELLS */}
+      {/* TAB 1: ACTIONS & SPELLS (Parchment Deck Cards) */}
       {activeTab === 'actions' && (
-        <div className="relative z-10 flex flex-col gap-3">
+        <div className="relative flex flex-col gap-3">
           {/* Add Spell / Action Button */}
           <button
             onClick={onOpenSpellPicker}
-            className="w-full py-2 px-3 rounded-xl bg-indigo-950/50 hover:bg-indigo-900/60 border border-indigo-500/50 text-indigo-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition shadow-sm font-fantasy cursor-pointer"
+            className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 hover:brightness-110 border border-indigo-500/60 text-indigo-200 font-semibold text-xs flex items-center justify-center gap-2 transition shadow-md font-fantasy cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5 text-indigo-400" />
+            <Plus className="w-4 h-4 text-indigo-400" />
             <span>Add Spell or Cantrip from 5e SRD</span>
           </button>
 
-          {/* Actions (Standard) */}
+          {/* Standard Actions */}
           <div>
-            <div className="text-xs font-bold text-amber-300/80 mb-1.5 flex items-center justify-between font-fantasy">
+            <div className="text-xs font-bold text-amber-300 mb-1.5 flex items-center justify-between font-fantasy">
               <span className="flex items-center gap-1 text-emerald-400">
                 <Zap className="w-3.5 h-3.5" /> Standard Actions
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">1 per turn</span>
+              <span className="text-[10px] text-amber-400/80 font-mono">1 per turn</span>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               {player.actionDeck.actions.map((act) => {
                 const isSelected = selectedAction?.id === act.id;
                 const disabled = !player.budget.actionAvailable;
@@ -364,19 +373,24 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                     onClick={() => handleActionClick(act)}
                     disabled={disabled}
                     title={act.description}
-                    className={`w-full text-left p-2.5 rounded-xl border transition-all text-xs flex items-center justify-between cursor-pointer ${
+                    className={`relative overflow-hidden w-full text-left p-3 rounded-xl border-2 transition-all text-xs flex items-center justify-between cursor-pointer shadow-md ${
                       isSelected
-                        ? 'bg-amber-500/25 border-amber-400 text-amber-200 ring-2 ring-amber-400/80 shadow-lg shadow-amber-500/20 scale-[1.01]'
+                        ? 'border-amber-400 ring-2 ring-amber-400/80 scale-[1.02] shadow-amber-500/30'
                         : disabled
-                        ? 'bg-slate-950/40 border-slate-900 text-slate-600 opacity-60 cursor-not-allowed'
-                        : 'bg-slate-900/90 hover:bg-slate-850 hover:border-amber-600/70 border-slate-800 text-amber-100 shadow-sm'
+                        ? 'border-stone-800 opacity-50 cursor-not-allowed'
+                        : 'border-amber-800/60 hover:border-amber-500'
                     }`}
+                    style={{
+                      backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
+                      backgroundSize: 'cover',
+                      color: '#2b170a'
+                    }}
                   >
                     <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                      <Swords className="w-4 h-4 text-amber-400 shrink-0" />
+                      <Swords className="w-4 h-4 text-amber-900 shrink-0" />
                       <div className="truncate">
-                        <div className="font-bold text-amber-100 truncate font-fantasy">{act.name}</div>
-                        <div className="text-[10px] text-amber-200/70 font-mono">
+                        <div className="font-fantasy font-black text-amber-950 text-sm truncate drop-shadow-sm">{act.name}</div>
+                        <div className="text-[10px] text-amber-900 font-bold font-mono">
                           {act.toHitMod !== undefined && `+${act.toHitMod} to hit `}
                           {act.damageFormula && `· ${act.damageFormula} `}
                           {act.rangeFt && `· ${act.rangeFt} ft`}
@@ -384,9 +398,11 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                       </div>
                     </div>
                     {isSelected ? (
-                      <Target className="w-4 h-4 text-amber-400 animate-spin shrink-0" />
+                      <span className="px-2.5 py-1 rounded-full bg-rose-700 text-rose-100 font-fantasy font-black text-[10px] border border-rose-500 animate-pulse shadow-md">
+                        TARGETING
+                      </span>
                     ) : (
-                      <span className="text-[10px] px-2 py-0.5 rounded-lg bg-slate-950 text-amber-300 border border-slate-700 shrink-0 font-medium font-fantasy">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-lg bg-amber-950/20 text-amber-950 border border-amber-900/30 shrink-0 font-bold font-fantasy">
                         {act.damageFormula ? 'Target' : 'Execute'}
                       </span>
                     )}
@@ -399,13 +415,13 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           {/* Bonus Actions */}
           {player.actionDeck.bonusActions.length > 0 && (
             <div>
-              <div className="text-xs font-bold text-amber-300/80 mb-1.5 flex items-center justify-between font-fantasy">
+              <div className="text-xs font-bold text-amber-300 mb-1.5 flex items-center justify-between font-fantasy">
                 <span className="flex items-center gap-1 text-amber-400">
                   <Sparkles className="w-3.5 h-3.5" /> Bonus Actions
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono">1 per turn</span>
+                <span className="text-[10px] text-amber-400/80 font-mono">1 per turn</span>
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 {player.actionDeck.bonusActions.map((act) => {
                   const disabled = !player.budget.bonusActionAvailable;
 
@@ -415,17 +431,22 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                       onClick={() => handleActionClick(act)}
                       disabled={disabled}
                       title={act.description}
-                      className={`w-full text-left p-2.5 rounded-xl border transition-all text-xs flex items-center justify-between cursor-pointer ${
+                      className={`relative overflow-hidden w-full text-left p-3 rounded-xl border-2 transition-all text-xs flex items-center justify-between cursor-pointer shadow-md ${
                         disabled
-                          ? 'bg-slate-950/40 border-slate-900 text-slate-600 opacity-60 cursor-not-allowed'
-                          : 'bg-slate-900/90 hover:bg-slate-850 hover:border-amber-600/70 border-slate-800 text-amber-100 shadow-sm'
+                          ? 'border-stone-800 opacity-50 cursor-not-allowed'
+                          : 'border-amber-800/60 hover:border-amber-500'
                       }`}
+                      style={{
+                        backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
+                        backgroundSize: 'cover',
+                        color: '#2b170a'
+                      }}
                     >
                       <div className="pr-2">
-                        <div className="font-bold text-amber-200 font-fantasy">{act.name}</div>
-                        <div className="text-[10px] text-amber-200/60 leading-snug">{act.description}</div>
+                        <div className="font-fantasy font-black text-amber-950 text-sm">{act.name}</div>
+                        <div className="text-[10px] text-amber-900 font-semibold leading-snug">{act.description}</div>
                       </div>
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-lg bg-amber-950/60 text-amber-300 border border-amber-800 shrink-0 font-semibold font-fantasy">
+                      <span className="text-[10px] px-2.5 py-1 rounded-lg bg-amber-900 text-amber-100 border border-amber-700 shrink-0 font-black font-fantasy shadow-sm">
                         Use
                       </span>
                     </button>
@@ -438,27 +459,27 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           {/* Reactions */}
           {player.actionDeck.reactions.length > 0 && (
             <div>
-              <div className="text-xs font-bold text-amber-300/80 mb-1.5 flex items-center justify-between font-fantasy">
+              <div className="text-xs font-bold text-amber-300 mb-1.5 flex items-center justify-between font-fantasy">
                 <span className="flex items-center gap-1 text-purple-400">
                   <Clock className="w-3.5 h-3.5" /> Reactions (Auto-Prompted)
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono">1 per round</span>
+                <span className="text-[10px] text-amber-400/80 font-mono">1 per round</span>
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 {player.actionDeck.reactions.map((act) => (
                   <div
                     key={act.id}
                     title={act.description}
-                    className="p-2.5 rounded-xl border bg-slate-900/90 border-slate-800 text-xs shadow-sm"
+                    className="p-3 rounded-xl border-2 border-purple-900/60 bg-slate-900/90 text-xs shadow-md"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-purple-300 font-fantasy">{act.name}</span>
+                      <span className="font-fantasy font-bold text-purple-300 text-sm">{act.name}</span>
                       <span className={`text-[10px] font-mono font-bold ${player.budget.reactionAvailable ? 'text-emerald-400' : 'text-slate-500'}`}>
                         {player.budget.reactionAvailable ? 'Armed' : 'Spent'}
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-400 mt-1">
-                      <strong className="text-amber-200/80">Trigger:</strong> {act.triggerCondition || 'Reactive window'}
+                    <div className="text-[10px] text-slate-300 mt-1">
+                      <strong className="text-amber-300">Trigger:</strong> {act.triggerCondition || 'Reactive window'}
                     </div>
                   </div>
                 ))}
@@ -470,28 +491,33 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 
       {/* TAB 2: RULES CODEX */}
       {activeTab === 'rules' && (
-        <div className="relative z-10 flex flex-col gap-2">
+        <div className="relative flex flex-col gap-2">
           {coreRules.map((rule) => {
             const isExpanded = expandedRule === rule.id;
 
             return (
               <div
                 key={rule.id}
-                className="rounded-xl border border-amber-800/40 bg-slate-900/90 overflow-hidden shadow-sm transition"
+                className="rounded-xl border-2 border-amber-800/60 overflow-hidden shadow-md"
+                style={{
+                  backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
+                  backgroundSize: 'cover',
+                  color: '#2b170a'
+                }}
               >
                 <button
                   onClick={() => setExpandedRule(isExpanded ? null : rule.id)}
-                  className="w-full text-left p-2.5 flex items-center justify-between text-xs hover:bg-slate-800/80 transition cursor-pointer"
+                  className="w-full text-left p-3 flex items-center justify-between text-xs hover:bg-amber-900/10 transition cursor-pointer"
                 >
                   <div>
-                    <div className="font-bold text-amber-200 font-fantasy">{rule.name}</div>
-                    <div className="text-[10px] text-amber-400/80 font-mono">{rule.type}</div>
+                    <div className="font-fantasy font-black text-amber-950 text-sm">{rule.name}</div>
+                    <div className="text-[10px] text-amber-900 font-bold font-mono">{rule.type}</div>
                   </div>
-                  {isExpanded ? <ChevronDown className="w-4 h-4 text-amber-400" /> : <ChevronRight className="w-4 h-4 text-slate-500" />}
+                  {isExpanded ? <ChevronDown className="w-4 h-4 text-amber-950" /> : <ChevronRight className="w-4 h-4 text-amber-950/70" />}
                 </button>
 
                 {isExpanded && (
-                  <div className="p-2.5 bg-slate-950 border-t border-slate-800 text-[11px] text-amber-100/90 space-y-1.5 leading-relaxed font-serif-rpg text-sm">
+                  <div className="p-3 bg-amber-950/10 border-t border-amber-900/30 text-xs text-amber-950 font-serif-rpg font-semibold leading-relaxed">
                     <p>{rule.details}</p>
                   </div>
                 )}

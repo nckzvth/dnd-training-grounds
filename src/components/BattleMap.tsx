@@ -16,6 +16,7 @@ import {
 
 import { MapEditorBrush } from './MapEditorToolbar';
 import { ART_ASSETS, getTokenImage } from '../utils/artAssets';
+import { FantasyCornerBrackets } from './FantasyDecorations';
 
 interface BattleMapProps {
   gridWidth: number;
@@ -138,6 +139,7 @@ export const BattleMap: React.FC<BattleMapProps> = ({
 
   return (
     <div className="w-full flex flex-col bg-slate-950 select-none rounded-2xl border-4 border-amber-900/80 shadow-2xl overflow-hidden relative">
+      <FantasyCornerBrackets className="w-6 h-6 text-amber-500/80" />
       {/* Top Map Action Banner */}
       <div className="px-4 py-2.5 bg-gradient-to-r from-amber-950/90 via-slate-900/90 to-amber-950/90 border-b-2 border-amber-700/60 flex flex-wrap items-center justify-between gap-2 text-xs text-amber-100">
         <div className="flex items-center gap-2">

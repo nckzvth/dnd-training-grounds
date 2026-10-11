@@ -749,14 +749,16 @@ export function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-amber-50 flex flex-col font-sans selection:bg-amber-600/30 selection:text-amber-200">
-      {/* Ambient Tabletop Oak Grain Backdrop */}
-      <div 
-        className="fixed inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
-        style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }}
-      />
-      <div className="fixed inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/95 to-slate-950 pointer-events-none" />
-
+    <div 
+      className="relative min-h-screen text-amber-50 flex flex-col font-sans selection:bg-amber-600/30 selection:text-amber-200"
+      style={{
+        backgroundImage: `radial-gradient(circle at 50% 25%, rgba(20, 14, 9, 0.45) 0%, rgba(10, 6, 4, 0.85) 100%), url(${ART_ASSETS.darkWood})`,
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',
+        backgroundPosition: 'center',
+        backgroundColor: '#0c0806'
+      }}
+    >
       {/* Top Navbar */}
       <Navbar
         currentRound={currentRound}

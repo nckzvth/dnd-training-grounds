@@ -17,6 +17,7 @@ import {
   Zap,
   Target
 } from 'lucide-react';
+import { FantasyCornerBrackets } from './FantasyDecorations';
 
 export interface DiceTraySession {
   attacker: Combatant;
@@ -257,9 +258,10 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
 
     return (
       <section className="relative overflow-hidden w-full bg-slate-950 border-2 border-amber-600/70 rounded-2xl p-4 sm:p-5 shadow-2xl shadow-amber-950/40 flex flex-col gap-4 animate-in fade-in duration-200">
+        <FantasyCornerBrackets className="w-5 h-5 text-amber-500" />
         {/* Subtle tabletop felt ambient background */}
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none mix-blend-overlay"
+          className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
           style={{ backgroundImage: `url(${ART_ASSETS.diceTray})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/95 to-slate-950 pointer-events-none" />
@@ -306,58 +308,66 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
           </button>
         </div>
 
-        {/* Tactical Context & 5e Math Inspector */}
-        <div className="relative z-10 bg-slate-900/90 p-3 rounded-xl border border-slate-800/90 text-xs space-y-2 backdrop-blur-sm">
-          <div className="font-bold text-slate-300 flex items-center justify-between text-[11px] uppercase tracking-wider">
-            <span className="flex items-center gap-1.5 text-cyan-400">
-              <Info className="w-3.5 h-3.5" /> 5e Decision & Calculation Inspector
+        {/* Tactical Context & 5e Math Inspector (Real Parchment Document) */}
+        <div 
+          className="relative z-10 p-3.5 rounded-xl border-2 border-amber-800/80 text-xs space-y-2 shadow-lg overflow-hidden"
+          style={{
+            backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
+            backgroundSize: 'cover',
+            color: '#2b170a'
+          }}
+        >
+          <FantasyCornerBrackets className="w-4 h-4 text-amber-800/70" />
+          <div className="relative z-10 font-bold text-amber-950 flex items-center justify-between text-[11px] uppercase tracking-wider font-fantasy">
+            <span className="flex items-center gap-1.5 text-amber-950 font-black">
+              <Info className="w-3.5 h-3.5 text-amber-800" /> 5e Decision & Calculation Inspector
             </span>
-            <span className="font-mono text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-800/50">
+            <span className="font-mono text-amber-950 bg-amber-900/15 px-2 py-0.5 rounded font-black border border-amber-900/30">
               Distance: {distFt} ft
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1 text-[11px]">
             {/* Box 1: Attacker Choices */}
-            <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 space-y-1">
-              <div className="font-semibold text-amber-300 uppercase text-[10px]">1. Attacker Choice</div>
-              <div className="text-slate-300">
+            <div className="bg-amber-950/10 p-2.5 rounded-lg border border-amber-900/30 space-y-1">
+              <div className="font-black text-amber-950 uppercase text-[10px] font-fantasy">1. Attacker Choice</div>
+              <div className="text-amber-900 font-medium">
                 • <strong>Modifier:</strong> {chosenAbility} ({chosenMod >= 0 ? `+${chosenMod}` : chosenMod}) + PB (+{proficiencyBonus})
-                {isFinesse && <span className="text-emerald-400 block text-[10px]">↳ Finesse weapon: DEX preferred over STR.</span>}
+                {isFinesse && <span className="text-emerald-800 block text-[10px] font-bold">↳ Finesse weapon: DEX preferred over STR.</span>}
               </div>
-              <div className="text-slate-300 font-mono text-[10px] text-amber-200">
+              <div className="text-amber-950 font-mono text-[10px] font-black">
                 Total To-Hit Mod = <strong>+{toHitMod}</strong>
               </div>
             </div>
 
             {/* Box 2: Spatial & Cover Math */}
-            <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 space-y-1">
-              <div className="font-semibold text-sky-300 uppercase text-[10px]">2. Spatial Defense</div>
-              <div className="text-slate-300">
+            <div className="bg-amber-950/10 p-2.5 rounded-lg border border-amber-900/30 space-y-1">
+              <div className="font-black text-amber-950 uppercase text-[10px] font-fantasy">2. Spatial Defense</div>
+              <div className="text-amber-900 font-medium">
                 • <strong>Target Defense:</strong> Base AC {targetBaseAc}
               </div>
-              <div className="text-slate-300">
+              <div className="text-amber-900 font-medium">
                 • <strong>Cover:</strong> {cover.cover.toUpperCase()} ({coverBonusAc > 0 ? `+${coverBonusAc} AC bonus` : '0 AC bonus'})
               </div>
-              <div className="text-slate-300 font-mono text-[10px] text-sky-200">
+              <div className="text-amber-950 font-mono text-[10px] font-black">
                 Effective AC = {targetBaseAc} + {coverBonusAc} = <strong>{effectiveAc} AC</strong>
               </div>
             </div>
 
             {/* Box 3: Tactical Modifiers */}
-            <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 space-y-1">
-              <div className="font-semibold text-purple-300 uppercase text-[10px]">3. Tactical Modifiers</div>
-              <div className="text-slate-300">
+            <div className="bg-amber-950/10 p-2.5 rounded-lg border border-amber-900/30 space-y-1">
+              <div className="font-black text-amber-950 uppercase text-[10px] font-fantasy">3. Tactical Modifiers</div>
+              <div className="text-amber-900 font-medium">
                 • <strong>Range Check:</strong> {distFt} ft / normal {normalRange} ft
-                {isLongRangeDisadvantage && <span className="text-rose-400 block">↳ Long Range! Attack has Disadvantage.</span>}
+                {isLongRangeDisadvantage && <span className="text-rose-800 block font-bold">↳ Long Range! Attack has Disadvantage.</span>}
               </div>
               {attacker.spatial.isHiding && (
-                <div className="text-emerald-400 text-[10px]">
+                <div className="text-emerald-800 text-[10px] font-bold">
                   • <strong>Attacker Hidden:</strong> Grants Advantage!
                 </div>
               )}
               {isSavingThrowAction && (
-                <div className="text-indigo-300 text-[10px]">
+                <div className="text-indigo-900 text-[10px] font-bold">
                   • <strong>Spell Save DC:</strong> 8 + PB({proficiencyBonus}) + Mod({primaryCastingMod}) = <strong>DC {spellSaveDC}</strong>
                 </div>
               )}
@@ -913,34 +923,35 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
   // IDLE MODE: PERMANENT EMBEDDED TABLETOP DICE TRAY & PRACTICE SANDBOX
   // -------------------------------------------------------------
   return (
-    <section className="relative overflow-hidden w-full bg-slate-950 border-2 border-amber-900/40 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col gap-3.5">
+    <section className="relative overflow-hidden w-full bg-slate-950 border-2 border-amber-600/70 rounded-2xl p-4 sm:p-5 shadow-2xl shadow-amber-950/40 flex flex-col gap-3.5">
+      <FantasyCornerBrackets className="w-5 h-5 text-amber-500" />
       {/* Tabletop felt ambient background */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-15 pointer-events-none mix-blend-overlay"
+        className="absolute inset-0 bg-cover bg-center opacity-25 pointer-events-none mix-blend-overlay"
         style={{ backgroundImage: `url(${ART_ASSETS.diceTray})` }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/95 to-slate-950 pointer-events-none" />
 
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between pb-2.5 border-b border-slate-800">
+      <div className="relative z-10 flex items-center justify-between pb-2.5 border-b border-amber-900/50">
         <div className="flex items-center gap-2">
           <Dices className="w-5 h-5 text-amber-400" />
-          <h2 className="text-sm sm:text-base font-bold text-slate-100">
+          <h2 className="text-sm sm:text-base font-fantasy font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 drop-shadow-sm">
             Tabletop Dice Tray & Rules Practice Sandbox
           </h2>
         </div>
-        <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-0.5 rounded-full font-semibold">
+        <span className="text-[11px] font-fantasy font-black uppercase text-amber-100 bg-gradient-to-r from-emerald-800 to-emerald-950 border border-emerald-500/60 px-3 py-0.5 rounded-full shadow-md">
           Ready for Action
         </span>
       </div>
 
       {/* Interactive Polyhedral Dice Tray */}
       <div className="relative z-10">
-        <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2 flex items-center justify-between">
+        <div className="text-[10px] font-fantasy uppercase font-black text-amber-300 tracking-wider mb-2 flex items-center justify-between">
           <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-amber-400" /> Click any physical die below to roll directly on felt:
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Click any physical die below to roll directly on felt:
           </span>
-          <span className="text-slate-500 font-mono">Polyhedral Dice Set</span>
+          <span className="text-amber-400/80 font-mono">Polyhedral Dice Set</span>
         </div>
 
         <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center select-none">
@@ -948,13 +959,13 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
             <button
               key={die}
               onClick={() => handleRollSingleDie(die)}
-              className="p-2 sm:p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/70 text-slate-300 hover:text-amber-300 flex flex-col items-center justify-center transition group shadow-sm hover:scale-105"
+              className="p-2 sm:p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border-2 border-amber-900/50 hover:border-amber-400/80 text-amber-200 hover:text-amber-100 flex flex-col items-center justify-center transition group shadow-md hover:scale-105 active:scale-95 cursor-pointer"
               title={`Roll 1${die}`}
             >
-              <div className="w-6 h-6 flex items-center justify-center font-bold text-xs group-hover:scale-110 transition">
+              <div className="w-6 h-6 flex items-center justify-center font-bold text-xs group-hover:scale-110 transition font-fantasy">
                 {die === 'd100' ? '%' : die}
               </div>
-              <span className="text-[9px] font-mono text-slate-500 group-hover:text-amber-400 mt-1 uppercase font-bold">
+              <span className="text-[9px] font-mono text-amber-400/70 group-hover:text-amber-300 mt-1 uppercase font-black">
                 {die}
               </span>
             </button>
@@ -963,19 +974,19 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
       </div>
 
       {/* Free Roll Output or Formula Tester */}
-      <div className="relative z-10 bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+      <div className="relative z-10 bg-slate-900/90 p-3 rounded-xl border border-amber-900/50 flex flex-wrap items-center justify-between gap-2.5 text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-slate-300 font-medium">Test Formula:</span>
+          <span className="text-amber-200 font-fantasy font-bold text-xs">Test Formula:</span>
           <input
             type="text"
             value={sandboxFormula}
             onChange={(e) => setSandboxFormula(e.target.value)}
-            className="w-24 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-amber-300 text-xs focus:outline-none focus:border-amber-500"
+            className="w-24 bg-slate-950 border border-amber-800/80 rounded-lg px-2.5 py-1.5 font-mono text-amber-300 text-xs focus:outline-none focus:border-amber-400"
             placeholder="e.g. 2d6+3"
           />
           <button
             onClick={() => handleRollSandboxFormula(sandboxFormula)}
-            className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs transition shadow"
+            className="px-3 py-1.5 rounded-lg btn-fantasy-gold font-fantasy font-bold text-xs transition shadow cursor-pointer"
           >
             Roll
           </button>
@@ -983,7 +994,7 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
 
         {/* Quick Presets */}
         <div className="flex items-center gap-1.5">
-          <span className="text-slate-500 text-[10px]">Presets:</span>
+          <span className="text-amber-400/70 font-fantasy text-[10px] font-semibold">Presets:</span>
           {['1d20+5', '2d6+3', '1d8+4', '8d6'].map((f) => (
             <button
               key={f}
@@ -991,7 +1002,7 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
                 setSandboxFormula(f);
                 handleRollSandboxFormula(f);
               }}
-              className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-amber-300 border border-slate-800 transition"
+              className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-amber-200 hover:text-amber-100 border border-amber-900/50 transition cursor-pointer"
             >
               {f}
             </button>
@@ -1000,20 +1011,28 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
 
         {sandboxResult && (
           <div className="w-full sm:w-auto font-mono text-xs flex items-center gap-2 pt-1 sm:pt-0">
-            <span className="text-slate-400">{sandboxResult.breakdown}</span>
-            <span className="font-bold text-amber-300 bg-amber-950/60 px-2.5 py-0.5 rounded-lg border border-amber-500/40">
+            <span className="text-amber-200/80">{sandboxResult.breakdown}</span>
+            <span className="font-bold text-amber-300 bg-amber-950/80 px-2.5 py-0.5 rounded-lg border border-amber-500/60 shadow">
               Total: {sandboxResult.total}
             </span>
           </div>
         )}
       </div>
 
-      {/* Tabletop Coach Advice Card */}
-      <div className="relative z-10 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-        <div className="space-y-0.5">
-          <div className="font-semibold text-slate-200">How to use during combat:</div>
-          <p className="text-[11px] leading-relaxed">
+      {/* Tabletop Coach Advice Card (Real Parchment Manuscript) */}
+      <div 
+        className="relative z-10 p-3.5 rounded-xl border-2 border-amber-800/80 text-xs shadow-md flex items-start gap-3 overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
+          backgroundSize: 'cover',
+          color: '#2b170a'
+        }}
+      >
+        <FantasyCornerBrackets className="w-3.5 h-3.5 text-amber-800/60" />
+        <Info className="w-5 h-5 text-amber-900 shrink-0 mt-0.5" />
+        <div className="relative z-10 space-y-0.5">
+          <div className="font-fantasy font-black text-amber-950 text-sm">Tabletop Combat Flow & Instructions:</div>
+          <p className="font-serif-rpg text-amber-950/90 text-sm font-semibold leading-relaxed">
             Select an attack or spell from your <strong>Action Deck</strong> on the left, then click any enemy with the pulsing red reticle on the battlemap. 
             The <strong>Tabletop Dice Tray</strong> will immediately engage here, guiding you through every single dice roll, AC comparison, and damage calculation without skipping rules!
           </p>

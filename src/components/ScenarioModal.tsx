@@ -3,6 +3,8 @@ import { ART_ASSETS } from '../utils/artAssets';
 import { EncounterPreset, PRESET_ENCOUNTERS } from '../data/presetEncounters';
 import { MapPin, Swords, Target, Shield, X, Check } from 'lucide-react';
 
+import { FantasyCornerBrackets, WaxSealBadge } from './FantasyDecorations';
+
 interface ScenarioModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,26 +21,27 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-slate-950 border-2 border-amber-600/70 rounded-2xl shadow-2xl  max-w-xl w-full p-5 flex flex-col ">
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
-        <div className="absolute top-0 right-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '150px', height: '150px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="bg-slate-950 border-4 border-amber-700/80 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.95)] max-w-xl w-full p-5 flex flex-col relative overflow-hidden">
+        <FantasyCornerBrackets className="w-6 h-6 text-amber-500" />
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-25 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
+        <div className="absolute top-0 right-0 opacity-15 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '160px', height: '160px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
         <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-amber-900/60">
           <div>
-            <h2 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 flex items-center gap-2 drop-shadow-md">
-              <MapPin className="w-5 h-5 text-amber-500" />
+            <h2 className="text-xl font-fantasy text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 flex items-center gap-2 drop-shadow-md">
+              <MapPin className="w-5 h-5 text-amber-400" />
               Practice Maps & Tactical Scenarios
             </h2>
-            <p className="text-xs text-slate-400">Choose an encounter testbed to stress-test your character build</p>
+            <p className="text-xs text-amber-200/70 font-serif-rpg text-sm">Choose an encounter testbed to stress-test your character build</p>
           </div>
-          <button onClick={onClose} className="p-1 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-amber-400 hover:text-amber-200 hover:bg-slate-800 transition cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Encounters List */}
+        {/* Encounters List (Real Parchment Expedition Folios) */}
         <div className="flex-1 overflow-y-auto space-y-3 py-3 pr-1">
           {PRESET_ENCOUNTERS.map((enc) => {
             const isActive = enc.id === activeEncounterId;
@@ -46,27 +49,30 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
             return (
               <div
                 key={enc.id}
-                className={`p-3.5 rounded-lg border transition ${
+                className={`relative overflow-hidden p-4 rounded-xl border-2 transition-all shadow-md ${
                   isActive
-                    ? 'bg-amber-950/20 border-amber-600 ring-1 ring-amber-600'
-                    : 'bg-slate-900/90 border-amber-800/60 hover:border-amber-600/80 '
+                    ? 'border-amber-600 ring-2 ring-amber-500 shadow-amber-950/40'
+                    : 'border-amber-800/70 hover:border-amber-600 hover:shadow-lg'
                 }`}
+                style={{
+                  backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
+                  backgroundSize: 'cover',
+                  color: '#2b170a'
+                }}
               >
-                <div className="flex items-start justify-between gap-3">
+                <FantasyCornerBrackets className="w-3.5 h-3.5 text-amber-800/60" />
+                <div className="relative z-10 flex items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-slate-100 text-sm">{enc.title}</h3>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                        enc.difficulty === 'Easy (Practice)' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
-                        enc.difficulty === 'Medium' ? 'bg-amber-950 text-amber-400 border border-amber-800' :
-                        'bg-rose-950 text-rose-400 border border-rose-800'
-                      }`}>
-                        {enc.difficulty}
-                      </span>
+                      <h3 className="font-fantasy font-black text-amber-950 text-base">{enc.title}</h3>
+                      <WaxSealBadge 
+                        text={enc.difficulty} 
+                        color={enc.difficulty.includes('Easy') ? 'green' : enc.difficulty === 'Medium' ? 'amber' : 'red'} 
+                      />
                     </div>
-                    <p className="text-xs text-slate-300 mt-1 leading-relaxed">{enc.description}</p>
-                    <div className="text-[11px] text-amber-400/90 mt-2 flex items-center gap-1.5">
-                      <Target className="w-3.5 h-3.5" />
+                    <p className="font-serif-rpg text-xs text-amber-950/90 mt-1.5 leading-relaxed font-semibold">{enc.description}</p>
+                    <div className="text-[11px] text-amber-950 mt-2 flex items-center gap-1.5 bg-amber-950/10 p-1.5 rounded-lg border border-amber-900/30">
+                      <Target className="w-3.5 h-3.5 text-amber-800" />
                       <strong>Tactical Focus:</strong> {enc.tacticalFocus}
                     </div>
                   </div>
@@ -76,14 +82,14 @@ export const ScenarioModal: React.FC<ScenarioModalProps> = ({
                       onSelectEncounter(enc);
                       onClose();
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1 transition ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-fantasy font-black shrink-0 flex items-center gap-1.5 transition cursor-pointer shadow-md ${
                       isActive
-                        ? 'bg-amber-600 text-white shadow-md shadow-amber-900/30'
+                        ? 'bg-amber-900 text-amber-100 border border-amber-700 shadow-amber-950/60'
                         : 'btn-fantasy-gold'
                     }`}
                   >
                     {isActive ? <Check className="w-3.5 h-3.5" /> : null}
-                    {isActive ? 'Active Map' : 'Load Scenario'}
+                    {isActive ? 'Active Map' : 'Deploy Map'}
                   </button>
                 </div>
               </div>
