@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ART_ASSETS } from '../utils/artAssets';
+import { ART_ASSETS, getDarkVellumStyle } from '../utils/artAssets';
 import { ActionItem } from '../types/combat';
 import { SRD_SPELLS, SrdSpell } from '../data/srdSpells';
 import { Sparkles, Plus, Check, X, Search, BookOpen, Flame, Shield } from 'lucide-react';
@@ -77,13 +77,13 @@ export const SpellPickerModal: React.FC<SpellPickerModalProps> = ({
         {/* Filter Controls */}
         <div className="flex flex-wrap items-center gap-2 my-3">
           <div className="relative flex-1 min-w-[180px]">
-            <Search className="w-4 h-4 text-amber-800 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-amber-400/70 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Search spells by name or school..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 rounded-xl pl-9 pr-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-600 shadow-inner"
+              className="w-full bg-slate-900/90 text-amber-100 placeholder:text-amber-400/50 border-2 border-amber-800/60 rounded-xl pl-9 pr-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner"
             />
           </div>
 
@@ -104,7 +104,7 @@ export const SpellPickerModal: React.FC<SpellPickerModalProps> = ({
           </div>
         </div>
 
-        {/* Spells List (Real Parchment Manuscript Cards) */}
+        {/* Spells List (Dark Antiqued Vellum Manuscript Cards) */}
         <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
           {filteredSpells.map((spell) => {
             const isAdded = addedIds.has(spell.id);
@@ -113,31 +113,27 @@ export const SpellPickerModal: React.FC<SpellPickerModalProps> = ({
               <div
                 key={spell.id}
                 className="relative overflow-hidden p-3.5 rounded-xl border-2 border-amber-800/70 hover:border-amber-600 transition-all flex items-start justify-between gap-3 text-xs shadow-md"
-                style={{
-                  backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-                  backgroundSize: 'cover',
-                  color: '#2b170a'
-                }}
+                style={getDarkVellumStyle(0.92)}
               >
-                <FantasyCornerBrackets className="w-3 h-3 text-amber-800/60" />
+                <FantasyCornerBrackets className="w-3 h-3 text-amber-600/50" />
                 <div className="relative z-10 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-fantasy font-black text-amber-950 text-base">{spell.name}</span>
+                    <span className="font-fantasy font-black text-amber-200 text-base">{spell.name}</span>
                     <WaxSealBadge 
                       text={spell.level === 0 ? 'Cantrip' : `Level ${spell.level}`} 
                       color={spell.level === 0 ? 'green' : 'blue'} 
                     />
-                    <span className="text-[10px] text-amber-900/80 font-mono font-bold">
+                    <span className="text-[10px] text-amber-400/80 font-mono font-bold">
                       {spell.school} · {spell.castingTime} · {spell.rangeFt} ft
                     </span>
                   </div>
 
-                  <p className="font-serif-rpg text-amber-950 text-xs font-semibold mt-1 leading-relaxed line-clamp-2">
+                  <p className="font-serif-rpg text-amber-200/90 text-xs font-semibold mt-1 leading-relaxed line-clamp-2">
                     {spell.description}
                   </p>
 
-                  <div className="mt-2 p-2 rounded-lg bg-amber-950/10 border border-amber-900/30 text-[11px] text-amber-950 font-serif-rpg font-semibold">
-                    💡 <strong>Physical Tabletop Tip:</strong> {spell.tabletopTip}
+                  <div className="mt-2 p-2 rounded-lg bg-amber-950/40 border border-amber-700/40 text-[11px] text-amber-300 font-serif-rpg font-semibold">
+                    💡 <strong className="text-amber-100">Physical Tabletop Tip:</strong> {spell.tabletopTip}
                   </div>
                 </div>
 

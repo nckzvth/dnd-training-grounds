@@ -1,5 +1,5 @@
 import React from 'react';
-import { ART_ASSETS } from '../utils/artAssets';
+import { ART_ASSETS, getDarkVellumStyle } from '../utils/artAssets';
 import { TelemetryRoundRecord } from '../types/combat';
 import { BarChart3, AlertTriangle, CheckCircle, ShieldCheck, Zap, X } from 'lucide-react';
 import { FantasyCornerBrackets, WaxSealBadge } from './FantasyDecorations';
@@ -52,23 +52,19 @@ export const TelemetryModal: React.FC<TelemetryModalProps> = ({
           </button>
         </div>
 
-        {/* High Level Stats Grid (Real Parchment KPI Documents) */}
+        {/* High Level Stats Grid (Dark Antiqued Vellum KPI Cards) */}
         <div className="grid grid-cols-3 gap-2.5 my-3.5">
           {/* Action Economy Leakage */}
           <div 
             className="p-3 rounded-xl border-2 border-amber-800/70 text-center shadow-md relative overflow-hidden"
-            style={{
-              backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-              backgroundSize: 'cover',
-              color: '#2b170a'
-            }}
+            style={getDarkVellumStyle(0.92)}
           >
-            <FantasyCornerBrackets className="w-2.5 h-2.5 text-amber-800/50" />
-            <div className="text-[10px] uppercase font-fantasy font-black text-amber-950">Action Leakage</div>
-            <div className={`text-2xl font-black font-mono mt-1 ${actionLeakagePercent > 40 ? 'text-rose-900' : 'text-emerald-900'}`}>
+            <FantasyCornerBrackets className="w-2.5 h-2.5 text-amber-600/50" />
+            <div className="text-[10px] uppercase font-fantasy font-black text-amber-200">Action Leakage</div>
+            <div className={`text-2xl font-black font-mono mt-1 ${actionLeakagePercent > 40 ? 'text-rose-400' : 'text-emerald-400'}`}>
               {actionLeakagePercent}%
             </div>
-            <div className="text-[10px] text-amber-900/80 font-serif-rpg font-semibold mt-0.5">
+            <div className="text-[10px] text-amber-300/80 font-serif-rpg font-semibold mt-0.5">
               {wastedBonusActions} unused bonus, {wastedReactions} unheld reactions
             </div>
           </div>
@@ -76,18 +72,14 @@ export const TelemetryModal: React.FC<TelemetryModalProps> = ({
           {/* Defensive Exposure */}
           <div 
             className="p-3 rounded-xl border-2 border-amber-800/70 text-center shadow-md relative overflow-hidden"
-            style={{
-              backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-              backgroundSize: 'cover',
-              color: '#2b170a'
-            }}
+            style={getDarkVellumStyle(0.92)}
           >
-            <FantasyCornerBrackets className="w-2.5 h-2.5 text-amber-800/50" />
-            <div className="text-[10px] uppercase font-fantasy font-black text-amber-950">Exposure Index</div>
-            <div className={`text-2xl font-black font-mono mt-1 ${defensiveExposurePercent > 50 ? 'text-amber-900' : 'text-sky-900'}`}>
+            <FantasyCornerBrackets className="w-2.5 h-2.5 text-amber-600/50" />
+            <div className="text-[10px] uppercase font-fantasy font-black text-amber-200">Exposure Index</div>
+            <div className={`text-2xl font-black font-mono mt-1 ${defensiveExposurePercent > 50 ? 'text-amber-400' : 'text-sky-300'}`}>
               {defensiveExposurePercent}%
             </div>
-            <div className="text-[10px] text-amber-900/80 font-serif-rpg font-semibold mt-0.5">
+            <div className="text-[10px] text-amber-300/80 font-serif-rpg font-semibold mt-0.5">
               {exposedRounds} of {totalRounds} turns in open LoS
             </div>
           </div>
@@ -95,70 +87,62 @@ export const TelemetryModal: React.FC<TelemetryModalProps> = ({
           {/* Average DPR */}
           <div 
             className="p-3 rounded-xl border-2 border-amber-800/70 text-center shadow-md relative overflow-hidden"
-            style={{
-              backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-              backgroundSize: 'cover',
-              color: '#2b170a'
-            }}
+            style={getDarkVellumStyle(0.92)}
           >
-            <FantasyCornerBrackets className="w-2.5 h-2.5 text-amber-800/50" />
-            <div className="text-[10px] uppercase font-fantasy font-black text-amber-950">Damage / Round</div>
-            <div className="text-2xl font-black font-mono mt-1 text-amber-950">
+            <FantasyCornerBrackets className="w-2.5 h-2.5 text-amber-600/50" />
+            <div className="text-[10px] uppercase font-fantasy font-black text-amber-200">Damage / Round</div>
+            <div className="text-2xl font-black font-mono mt-1 text-amber-300">
               {dpr}
             </div>
-            <div className="text-[10px] text-amber-900/80 font-serif-rpg font-semibold mt-0.5">
+            <div className="text-[10px] text-amber-300/80 font-serif-rpg font-semibold mt-0.5">
               {totalDamageDealt} dealt, {totalDamageTaken} taken
             </div>
           </div>
         </div>
 
-        {/* Tactical Coaching Advice (Parchment Codex Note) */}
+        {/* Tactical Coaching Advice (Dark Vellum Codex Note) */}
         <div 
           className="p-3.5 rounded-xl border-2 border-amber-800/70 text-xs mb-3 space-y-2 shadow-md relative overflow-hidden"
-          style={{
-            backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-            backgroundSize: 'cover',
-            color: '#2b170a'
-          }}
+          style={getDarkVellumStyle(0.92)}
         >
-          <FantasyCornerBrackets className="w-3 h-3 text-amber-800/50" />
-          <div className="relative z-10 font-fantasy font-black text-amber-950 text-sm flex items-center gap-1.5">
-            <Zap className="w-4 h-4 text-amber-800" />
+          <FantasyCornerBrackets className="w-3 h-3 text-amber-600/50" />
+          <div className="relative z-10 font-fantasy font-black text-amber-200 text-sm flex items-center gap-1.5">
+            <Zap className="w-4 h-4 text-amber-400" />
             Tactical Coaching for {characterArchetype}
           </div>
 
           {wastedBonusActions > 0 && /rogue/i.test(characterArchetype) && (
-            <div className="relative z-10 flex items-start gap-2 bg-amber-950/10 p-2 rounded-lg border border-amber-900/30 font-serif-rpg text-amber-950 font-semibold">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-800 mt-0.5" />
+            <div className="relative z-10 flex items-start gap-2 bg-amber-950/40 p-2 rounded-lg border border-amber-700/50 font-serif-rpg text-amber-200 font-semibold">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
               <span>
-                <strong>Bonus Action Bottleneck:</strong> You ended {wastedBonusActions} round(s) without using Cunning Action. As a Rogue, always evaluate Cunning Action Hide (for free advantage) or Disengage before ending your turn.
+                <strong className="text-amber-100">Bonus Action Bottleneck:</strong> You ended {wastedBonusActions} round(s) without using Cunning Action. As a Rogue, always evaluate Cunning Action Hide (for free advantage) or Disengage before ending your turn.
               </span>
             </div>
           )}
 
           {defensiveExposurePercent > 50 && (
-            <div className="relative z-10 flex items-start gap-2 bg-rose-950/10 p-2 rounded-lg border border-rose-900/30 font-serif-rpg text-rose-950 font-semibold">
-              <ShieldCheck className="w-4 h-4 shrink-0 text-rose-800 mt-0.5" />
+            <div className="relative z-10 flex items-start gap-2 bg-rose-950/30 p-2 rounded-lg border border-rose-700/50 font-serif-rpg text-amber-100 font-semibold">
+              <ShieldCheck className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
               <span>
-                <strong>Defensive Exposure:</strong> You ended {defensiveExposurePercent}% of rounds out in the open. Use 5-10 ft of leftover movement to step behind half-cover crates (+2 AC) or solid walls to break line-of-sight.
+                <strong className="text-rose-200">Defensive Exposure:</strong> You ended {defensiveExposurePercent}% of rounds out in the open. Use 5-10 ft of leftover movement to step behind half-cover crates (+2 AC) or solid walls to break line-of-sight.
               </span>
             </div>
           )}
 
           {totalOverkill > 0 && (
-            <div className="relative z-10 flex items-start gap-2 bg-amber-950/10 p-2 rounded-lg border border-amber-900/30 font-serif-rpg text-amber-950 font-semibold">
-              <CheckCircle className="w-4 h-4 shrink-0 text-sky-800 mt-0.5" />
+            <div className="relative z-10 flex items-start gap-2 bg-amber-950/40 p-2 rounded-lg border border-amber-700/50 font-serif-rpg text-amber-200 font-semibold">
+              <CheckCircle className="w-4 h-4 shrink-0 text-sky-400 mt-0.5" />
               <span>
-                <strong>Overkill Inefficiency:</strong> {totalOverkill} damage was wasted past 0 HP on defeated targets. Practice splitting multiple attacks between targets when minions are bloodied.
+                <strong className="text-sky-200">Overkill Inefficiency:</strong> {totalOverkill} damage was wasted past 0 HP on defeated targets. Practice splitting multiple attacks between targets when minions are bloodied.
               </span>
             </div>
           )}
 
           {actionLeakagePercent <= 20 && defensiveExposurePercent <= 30 && (
-            <div className="relative z-10 flex items-start gap-2 bg-emerald-950/10 p-2 rounded-lg border border-emerald-900/30 font-serif-rpg text-emerald-950 font-semibold">
-              <CheckCircle className="w-4 h-4 shrink-0 text-emerald-800 mt-0.5" />
+            <div className="relative z-10 flex items-start gap-2 bg-emerald-950/30 p-2 rounded-lg border border-emerald-700/50 font-serif-rpg text-emerald-200 font-semibold">
+              <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
               <span>
-                <strong>Exemplary Tactical Discipline!</strong> You maximized your action budget and effectively leveraged cover and kiting.
+                <strong className="text-emerald-300">Exemplary Tactical Discipline!</strong> You maximized your action budget and effectively leveraged cover and kiting.
               </span>
             </div>
           )}

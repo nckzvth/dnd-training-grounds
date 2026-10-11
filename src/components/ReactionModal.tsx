@@ -1,5 +1,5 @@
 import React from 'react';
-import { ART_ASSETS } from '../utils/artAssets';
+import { ART_ASSETS, getDarkVellumStyle } from '../utils/artAssets';
 import { ReactionPrompt } from '../types/combat';
 import { ShieldAlert, Zap, AlertCircle } from 'lucide-react';
 import { FantasyCornerBrackets, WaxSealBadge } from './FantasyDecorations';
@@ -12,10 +12,10 @@ export const ReactionModal: React.FC<ReactionModalProps> = ({ prompt }) => {
   if (!prompt) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-slate-950 border-4 border-amber-700/80 rounded-2xl max-w-md w-full p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] relative overflow-hidden">
-        <FantasyCornerBrackets className="w-6 h-6 text-amber-500" />
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-25 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-150">
+      <div className="bg-[#120c08] border-2 border-amber-900/60 rounded-2xl max-w-md w-full p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] relative overflow-hidden">
+        <FantasyCornerBrackets className="w-6 h-6 text-amber-600/50" />
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-overlay" style={{ backgroundImage: `url(${ART_ASSETS.darkWood})` }} />
         <div className="absolute top-0 right-0 opacity-15 pointer-events-none" style={{ backgroundImage: `url(${ART_ASSETS.crestEmblem})`, width: '140px', height: '140px', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', mixBlendMode: 'overlay' }} />
 
         <div className="relative z-10 flex flex-col">
@@ -34,17 +34,13 @@ export const ReactionModal: React.FC<ReactionModalProps> = ({ prompt }) => {
             </div>
           </div>
 
-          {/* Description & Rules explanation (Real Parchment Dispatch) */}
+          {/* Description & Rules explanation (Dark Vellum Dispatch) */}
           <div 
-            className="mt-3.5 p-3.5 rounded-xl border-2 border-amber-800/70 text-xs shadow-md relative overflow-hidden"
-            style={{
-              backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-              backgroundSize: 'cover',
-              color: '#2b170a'
-            }}
+            className="mt-3.5 p-3.5 rounded-xl border border-amber-900/40 text-xs shadow-md relative overflow-hidden"
+            style={getDarkVellumStyle(0.92)}
           >
-            <FantasyCornerBrackets className="w-3.5 h-3.5 text-amber-800/60" />
-            <div className="relative z-10 font-serif-rpg text-amber-950 font-semibold text-xs leading-relaxed">
+            <FantasyCornerBrackets className="w-3.5 h-3.5 text-amber-600/50" />
+            <div className="relative z-10 font-serif-rpg text-amber-200/90 font-semibold text-xs leading-relaxed">
               {prompt.description}
             </div>
           </div>

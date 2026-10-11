@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ART_ASSETS } from '../utils/artAssets';
+import { ART_ASSETS, getDarkVellumStyle } from '../utils/artAssets';
 import { SavedMapData } from '../types/combat';
 import { Download, Upload, Copy, Check, Trash2, Map, FileJson, X, Plus, AlertCircle } from 'lucide-react';
 import { FantasyCornerBrackets } from './FantasyDecorations';
@@ -174,7 +174,7 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                 type="text"
                 value={mapNameInput}
                 onChange={(e) => setMapNameInput(e.target.value)}
-                className="w-full bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 font-semibold rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-600 shadow-inner"
+                className="w-full bg-slate-900/90 text-amber-100 placeholder:text-amber-400/50 border-2 border-amber-800/60 font-semibold rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner"
                 placeholder="e.g. Goblin Outpost Ambush"
               />
             </div>
@@ -212,15 +212,11 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                     <div
                       key={m.id}
                       className="p-3 rounded-xl border-2 border-amber-800/70 flex items-center justify-between shadow-md relative overflow-hidden"
-                      style={{
-                        backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-                        backgroundSize: 'cover',
-                        color: '#2b170a'
-                      }}
+                      style={getDarkVellumStyle(0.92)}
                     >
                       <div>
-                        <div className="font-fantasy font-black text-amber-950 text-sm">{m.name}</div>
-                        <div className="text-[10px] text-amber-900 font-mono font-bold">
+                        <div className="font-fantasy font-black text-amber-200 text-sm">{m.name}</div>
+                        <div className="text-[10px] text-amber-400/80 font-mono font-bold">
                           {m.gridWidth}x{m.gridHeight} · {m.combatants?.length || 0} tokens · {new Date(m.savedAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -233,7 +229,7 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                         </button>
                         <button
                           onClick={() => handleDeleteSavedMap(m.id)}
-                          className="p-1.5 text-stone-600 hover:text-rose-700 transition cursor-pointer"
+                          className="p-1.5 text-amber-600 hover:text-rose-400 transition cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -249,14 +245,10 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
         {/* TAB 2: IMPORT */}
         {activeTab === 'import' && (
           <div className="space-y-3 overflow-y-auto pr-1 text-xs">
-            {/* File Upload (Parchment Dropzone) */}
+            {/* File Upload (Dark Vellum Dropzone) */}
             <div 
               className="p-4 rounded-xl border-2 border-dashed border-amber-800/80 transition text-center cursor-pointer relative shadow-md"
-              style={{
-                backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-                backgroundSize: 'cover',
-                color: '#2b170a'
-              }}
+              style={getDarkVellumStyle(0.92)}
             >
               <input
                 type="file"
@@ -264,9 +256,9 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                 onChange={handleFileUpload}
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
-              <FileJson className="w-8 h-8 text-amber-800 mx-auto mb-1" />
-              <div className="font-fantasy font-black text-amber-950 text-sm">Upload .json Battlemap File</div>
-              <div className="text-[11px] font-serif-rpg font-semibold text-amber-900">Click or drag & drop a saved map JSON file here</div>
+              <FileJson className="w-8 h-8 text-amber-400 mx-auto mb-1" />
+              <div className="font-fantasy font-black text-amber-200 text-sm">Upload .json Battlemap File</div>
+              <div className="text-[11px] font-serif-rpg font-semibold text-amber-300/80">Click or drag & drop a saved map JSON file here</div>
             </div>
 
             {/* Paste JSON */}
@@ -276,7 +268,7 @@ export const MapExportImportModal: React.FC<MapExportImportModalProps> = ({
                 value={pastedJson}
                 onChange={(e) => setPastedJson(e.target.value)}
                 placeholder='Paste map JSON string here...'
-                className="w-full h-28 bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 rounded-xl p-2.5 font-mono text-[11px] focus:outline-none focus:ring-2 focus:ring-amber-600 shadow-inner"
+                className="w-full h-28 bg-slate-900/90 text-amber-100 placeholder:text-amber-400/50 border-2 border-amber-800/60 rounded-xl p-2.5 font-mono text-[11px] focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner"
               />
             </div>
 

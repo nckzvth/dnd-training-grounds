@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Combatant, ActionItem, CoverEvaluation } from '../types/combat';
 import { rollDice, doubleDiceFormulaForCrit } from '../utils/dice';
-import { ART_ASSETS, getTokenImage } from '../utils/artAssets';
+import { ART_ASSETS, getTokenImage, getDarkVellumStyle } from '../utils/artAssets';
 import { 
   Dices, 
   CheckCircle2, 
@@ -308,66 +308,62 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
           </button>
         </div>
 
-        {/* Tactical Context & 5e Math Inspector (Real Parchment Document) */}
+        {/* Tactical Context & 5e Math Inspector (Dark Antiqued Vellum) */}
         <div 
-          className="relative z-10 p-3.5 rounded-xl border-2 border-amber-800/80 text-xs space-y-2 shadow-lg overflow-hidden"
-          style={{
-            backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-            backgroundSize: 'cover',
-            color: '#2b170a'
-          }}
+          className="relative z-10 p-3.5 rounded-xl border border-amber-900/50 text-xs space-y-2 shadow-lg overflow-hidden"
+          style={getDarkVellumStyle(0.92)}
         >
-          <FantasyCornerBrackets className="w-4 h-4 text-amber-800/70" />
-          <div className="relative z-10 font-bold text-amber-950 flex items-center justify-between text-[11px] uppercase tracking-wider font-fantasy">
-            <span className="flex items-center gap-1.5 text-amber-950 font-black">
-              <Info className="w-3.5 h-3.5 text-amber-800" /> 5e Decision & Calculation Inspector
+          <FantasyCornerBrackets className="w-4 h-4 text-amber-600/50" />
+          <div className="relative z-10 font-bold text-amber-200 flex items-center justify-between text-[11px] uppercase tracking-wider font-fantasy">
+            <span className="flex items-center gap-1.5 text-amber-100 font-black">
+              <Info className="w-3.5 h-3.5 text-amber-400" /> 5e Decision & Calculation Inspector
             </span>
-            <span className="font-mono text-amber-950 bg-amber-900/15 px-2 py-0.5 rounded font-black border border-amber-900/30">
+            <span className="font-mono text-amber-200 bg-black/40 px-2 py-0.5 rounded font-black border border-amber-900/40">
               Distance: {distFt} ft
             </span>
           </div>
 
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1 text-[11px]">
             {/* Box 1: Attacker Choices */}
-            <div className="bg-amber-950/10 p-2.5 rounded-lg border border-amber-900/30 space-y-1">
-              <div className="font-black text-amber-950 uppercase text-[10px] font-fantasy">1. Attacker Choice</div>
-              <div className="text-amber-900 font-medium">
+            <div className="bg-black/40 p-2.5 rounded-lg border border-amber-900/35 space-y-1">
+              <div className="font-black text-amber-300 uppercase text-[10px] font-fantasy">1. Attacker Choice</div>
+              <div className="text-amber-200/90 font-medium">
                 • <strong>Modifier:</strong> {chosenAbility} ({chosenMod >= 0 ? `+${chosenMod}` : chosenMod}) + PB (+{proficiencyBonus})
-                {isFinesse && <span className="text-emerald-800 block text-[10px] font-bold">↳ Finesse weapon: DEX preferred over STR.</span>}
+                {isFinesse && <span className="text-emerald-300 block text-[10px] font-bold">↳ Finesse weapon: DEX preferred over STR.</span>}
               </div>
-              <div className="text-amber-950 font-mono text-[10px] font-black">
+              <div className="text-amber-100 font-mono text-[10px] font-black">
                 Total To-Hit Mod = <strong>+{toHitMod}</strong>
               </div>
             </div>
 
             {/* Box 2: Spatial & Cover Math */}
-            <div className="bg-amber-950/10 p-2.5 rounded-lg border border-amber-900/30 space-y-1">
-              <div className="font-black text-amber-950 uppercase text-[10px] font-fantasy">2. Spatial Defense</div>
-              <div className="text-amber-900 font-medium">
+            <div className="bg-black/40 p-2.5 rounded-lg border border-amber-900/35 space-y-1">
+              <div className="font-black text-amber-300 uppercase text-[10px] font-fantasy">2. Spatial Defense</div>
+              <div className="text-amber-200/90 font-medium">
                 • <strong>Target Defense:</strong> Base AC {targetBaseAc}
               </div>
-              <div className="text-amber-900 font-medium">
+              <div className="text-amber-200/90 font-medium">
                 • <strong>Cover:</strong> {cover.cover.toUpperCase()} ({coverBonusAc > 0 ? `+${coverBonusAc} AC bonus` : '0 AC bonus'})
               </div>
-              <div className="text-amber-950 font-mono text-[10px] font-black">
+              <div className="text-amber-100 font-mono text-[10px] font-black">
                 Effective AC = {targetBaseAc} + {coverBonusAc} = <strong>{effectiveAc} AC</strong>
               </div>
             </div>
 
             {/* Box 3: Tactical Modifiers */}
-            <div className="bg-amber-950/10 p-2.5 rounded-lg border border-amber-900/30 space-y-1">
-              <div className="font-black text-amber-950 uppercase text-[10px] font-fantasy">3. Tactical Modifiers</div>
-              <div className="text-amber-900 font-medium">
+            <div className="bg-black/40 p-2.5 rounded-lg border border-amber-900/35 space-y-1">
+              <div className="font-black text-amber-300 uppercase text-[10px] font-fantasy">3. Tactical Modifiers</div>
+              <div className="text-amber-200/90 font-medium">
                 • <strong>Range Check:</strong> {distFt} ft / normal {normalRange} ft
-                {isLongRangeDisadvantage && <span className="text-rose-800 block font-bold">↳ Long Range! Attack has Disadvantage.</span>}
+                {isLongRangeDisadvantage && <span className="text-rose-300 block font-bold">↳ Long Range! Attack has Disadvantage.</span>}
               </div>
               {attacker.spatial.isHiding && (
-                <div className="text-emerald-800 text-[10px] font-bold">
+                <div className="text-emerald-300 text-[10px] font-bold">
                   • <strong>Attacker Hidden:</strong> Grants Advantage!
                 </div>
               )}
               {isSavingThrowAction && (
-                <div className="text-indigo-900 text-[10px] font-bold">
+                <div className="text-purple-300 text-[10px] font-bold">
                   • <strong>Spell Save DC:</strong> 8 + PB({proficiencyBonus}) + Mod({primaryCastingMod}) = <strong>DC {spellSaveDC}</strong>
                 </div>
               )}
@@ -1019,20 +1015,16 @@ export const TabletopDiceTray: React.FC<TabletopDiceTrayProps> = ({ session }) =
         )}
       </div>
 
-      {/* Tabletop Coach Advice Card (Real Parchment Manuscript) */}
+      {/* Tabletop Coach Advice Card (Dark Antiqued Vellum) */}
       <div 
-        className="relative z-10 p-3.5 rounded-xl border-2 border-amber-800/80 text-xs shadow-md flex items-start gap-3 overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-          backgroundSize: 'cover',
-          color: '#2b170a'
-        }}
+        className="relative z-10 p-3.5 rounded-xl border border-amber-900/50 text-xs shadow-md flex items-start gap-3 overflow-hidden"
+        style={getDarkVellumStyle(0.92)}
       >
-        <FantasyCornerBrackets className="w-3.5 h-3.5 text-amber-800/60" />
-        <Info className="w-5 h-5 text-amber-900 shrink-0 mt-0.5" />
+        <FantasyCornerBrackets className="w-3.5 h-3.5 text-amber-600/50" />
+        <Info className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
         <div className="relative z-10 space-y-0.5">
-          <div className="font-fantasy font-black text-amber-950 text-sm">Tabletop Combat Flow & Instructions:</div>
-          <p className="font-serif-rpg text-amber-950/90 text-sm font-semibold leading-relaxed">
+          <div className="font-fantasy font-black text-amber-100 text-sm">Tabletop Combat Flow & Instructions:</div>
+          <p className="font-serif-rpg text-amber-200/90 text-sm font-semibold leading-relaxed">
             Select an attack or spell from your <strong>Action Deck</strong> on the left, then click any enemy with the pulsing red reticle on the battlemap. 
             The <strong>Tabletop Dice Tray</strong> will immediately engage here, guiding you through every single dice roll, AC comparison, and damage calculation without skipping rules!
           </p>

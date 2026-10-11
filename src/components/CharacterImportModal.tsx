@@ -4,7 +4,7 @@ import { PRESET_CHARACTERS } from '../data/presetEncounters';
 import { parseCharacterPdf } from '../utils/pdfParser';
 import { parseFightClubXml } from '../utils/xmlParser';
 import { UploadCloud, FileText, UserPlus, Check, X, Shield, Heart, Footprints, Code, Sparkles } from 'lucide-react';
-import { ART_ASSETS, getTokenImage } from '../utils/artAssets';
+import { ART_ASSETS, getTokenImage, getDarkVellumStyle } from '../utils/artAssets';
 import { FantasyCornerBrackets, WaxSealBadge } from './FantasyDecorations';
 
 interface CharacterImportModalProps {
@@ -268,7 +268,7 @@ export const CharacterImportModal: React.FC<CharacterImportModalProps> = ({
           </button>
         </div>
 
-        {/* Tab 1: Presets (Real Parchment Dossiers) */}
+        {/* Tab 1: Presets (Dark Antiqued Vellum Dossiers) */}
         {tab === 'presets' && (
           <div className="relative z-10 flex-1 overflow-y-auto space-y-3 py-1 pr-1">
             {Object.values(PRESET_CHARACTERS).map((preset) => {
@@ -280,30 +280,26 @@ export const CharacterImportModal: React.FC<CharacterImportModalProps> = ({
                   className={`relative overflow-hidden p-3.5 rounded-xl border-2 flex items-center justify-between transition-all shadow-md ${
                     isActive ? 'border-amber-600 ring-2 ring-amber-500 shadow-amber-950/40' : 'border-amber-800/60 hover:border-amber-600 hover:shadow-lg'
                   }`}
-                  style={{
-                    backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-                    backgroundSize: 'cover',
-                    color: '#2b170a'
-                  }}
+                  style={getDarkVellumStyle(0.92)}
                 >
-                  <FantasyCornerBrackets className="w-3 h-3 text-amber-800/60" />
+                  <FantasyCornerBrackets className="w-3 h-3 text-amber-600/50" />
                   <div className="relative z-10 flex items-center gap-3">
                     <img 
                       src={getTokenImage(preset)} 
                       alt={preset.name} 
-                      className="w-12 h-12 rounded-full border-2 border-amber-800 object-cover shadow-md shrink-0" 
+                      className="w-12 h-12 rounded-full border-2 border-amber-700/80 object-cover shadow-md shrink-0" 
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-fantasy font-black text-amber-950 text-base">{preset.name}</span>
+                        <span className="font-fantasy font-black text-amber-200 text-base">{preset.name}</span>
                         <WaxSealBadge text={preset.archetype || 'Hero'} color="amber" />
                       </div>
-                      <div className="text-xs text-amber-900 mt-1 flex items-center gap-3 font-semibold">
-                        <span className="flex items-center gap-1"><Heart className="w-3.5 h-3.5 text-rose-700" /> {preset.vitals.maxHp} HP</span>
-                        <span className="flex items-center gap-1"><Shield className="w-3.5 h-3.5 text-indigo-800" /> {preset.vitals.baseAc} AC</span>
-                        <span className="flex items-center gap-1"><Footprints className="w-3.5 h-3.5 text-amber-800" /> {preset.vitals.speedFt} ft</span>
+                      <div className="text-xs text-amber-300 mt-1 flex items-center gap-3 font-semibold">
+                        <span className="flex items-center gap-1"><Heart className="w-3.5 h-3.5 text-rose-400" /> {preset.vitals.maxHp} HP</span>
+                        <span className="flex items-center gap-1"><Shield className="w-3.5 h-3.5 text-indigo-300" /> {preset.vitals.baseAc} AC</span>
+                        <span className="flex items-center gap-1"><Footprints className="w-3.5 h-3.5 text-amber-400" /> {preset.vitals.speedFt} ft</span>
                       </div>
-                      <div className="text-[11px] text-amber-900/80 mt-1 font-serif-rpg font-semibold">
+                      <div className="text-[11px] text-amber-400/80 mt-1 font-serif-rpg font-semibold">
                         Weapons: {preset.actionDeck.actions.filter(a => a.damageFormula).map(a => a.name).join(', ')}
                       </div>
                     </div>
@@ -334,14 +330,10 @@ export const CharacterImportModal: React.FC<CharacterImportModalProps> = ({
           <div className="relative z-10 flex-1 flex flex-col gap-3 py-1 overflow-y-auto">
             <div 
               className="p-3.5 rounded-xl border-2 border-amber-800/80 text-xs shadow-md"
-              style={{
-                backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-                backgroundSize: 'cover',
-                color: '#2b170a'
-              }}
+              style={getDarkVellumStyle(0.92)}
             >
-              <strong className="text-amber-950 font-fantasy text-sm block mb-1">Fight Club 5e XML Compendium Support:</strong>
-              <p className="font-serif-rpg font-semibold text-amber-900 text-xs leading-relaxed">
+              <strong className="text-amber-200 font-fantasy text-sm block mb-1">Fight Club 5e XML Compendium Support:</strong>
+              <p className="font-serif-rpg font-semibold text-amber-300/90 text-xs leading-relaxed">
                 Upload or paste standardized Lion's Den XML. The engine automatically parses ability scores, saving throws, weapons, to-hit modifiers, and spells.
               </p>
             </div>
@@ -375,7 +367,7 @@ export const CharacterImportModal: React.FC<CharacterImportModalProps> = ({
                 value={xmlInput}
                 onChange={(e) => setXmlInput(e.target.value)}
                 placeholder="<compendium version='5'><character>...</character></compendium>"
-                className="w-full bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 rounded-xl p-3 font-mono text-xs focus:ring-2 focus:ring-amber-600 focus:outline-none shadow-inner"
+                className="w-full bg-slate-900/90 text-amber-100 placeholder:text-amber-400/50 border-2 border-amber-800/60 rounded-xl p-3 font-mono text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-inner"
               />
             </div>
 
@@ -401,16 +393,12 @@ export const CharacterImportModal: React.FC<CharacterImportModalProps> = ({
         {tab === 'pdf' && (
           <div 
             className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-amber-800/80 rounded-xl shadow-md"
-            style={{
-              backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-              backgroundSize: 'cover',
-              color: '#2b170a'
-            }}
+            style={getDarkVellumStyle(0.92)}
           >
-            <UploadCloud className="w-12 h-12 text-amber-800 mb-2" />
-            <h3 className="text-base font-fantasy font-black text-amber-950 mb-1">Upload 5e Fillable PDF Character Sheet</h3>
-            <p className="text-xs text-amber-900 text-center max-w-sm mb-4 font-serif-rpg font-semibold">
-              Supports official WotC fillable AcroForms and community sheets. Parsed 100% client-side via <code className="text-amber-950 font-bold">pdf-lib</code>.
+            <UploadCloud className="w-12 h-12 text-amber-400 mb-2" />
+            <h3 className="text-base font-fantasy font-black text-amber-200 mb-1">Upload 5e Fillable PDF Character Sheet</h3>
+            <p className="text-xs text-amber-300/90 text-center max-w-sm mb-4 font-serif-rpg font-semibold">
+              Supports official WotC fillable AcroForms and community sheets. Parsed 100% client-side via <code className="text-amber-100 font-bold">pdf-lib</code>.
             </p>
 
             <label className="cursor-pointer px-4 py-2 rounded-xl btn-fantasy-gold font-fantasy font-black text-xs shadow-lg transition flex items-center gap-2">
@@ -437,82 +425,78 @@ export const CharacterImportModal: React.FC<CharacterImportModalProps> = ({
         {tab === 'manual' && (
           <div 
             className="relative z-10 flex-1 overflow-y-auto space-y-3 p-4 rounded-xl border-2 border-amber-800/80 text-xs shadow-md"
-            style={{
-              backgroundImage: `linear-gradient(rgba(247, 233, 201, 0.94), rgba(235, 212, 168, 0.96)), url(${ART_ASSETS.parchment})`,
-              backgroundSize: 'cover',
-              color: '#2b170a'
-            }}
+            style={getDarkVellumStyle(0.92)}
           >
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-amber-950 font-fantasy font-black mb-1">Character Name</label>
+                <label className="block text-amber-200 font-fantasy font-black mb-1">Character Name</label>
                 <input
                   type="text"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
-                  className="w-full bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-600 focus:outline-none shadow-inner"
+                  className="w-full bg-slate-900/90 text-amber-100 placeholder:text-amber-400/50 border-2 border-amber-800/60 font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-inner"
                 />
               </div>
               <div>
-                <label className="block text-amber-950 font-fantasy font-black mb-1">Speed (ft)</label>
+                <label className="block text-amber-200 font-fantasy font-black mb-1">Speed (ft)</label>
                 <input
                   type="number"
                   value={customSpeed}
                   onChange={(e) => setCustomSpeed(parseInt(e.target.value, 10) || 30)}
-                  className="w-full bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 font-mono font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-600 focus:outline-none shadow-inner"
+                  className="w-full bg-slate-900/90 text-amber-100 border-2 border-amber-800/60 font-mono font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-inner"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-amber-950 font-fantasy font-black mb-1">Max HP</label>
+                <label className="block text-amber-200 font-fantasy font-black mb-1">Max HP</label>
                 <input
                   type="number"
                   value={customHp}
                   onChange={(e) => setCustomHp(parseInt(e.target.value, 10) || 20)}
-                  className="w-full bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 font-mono font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-600 focus:outline-none shadow-inner"
+                  className="w-full bg-slate-900/90 text-amber-100 border-2 border-amber-800/60 font-mono font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-inner"
                 />
               </div>
               <div>
-                <label className="block text-amber-950 font-fantasy font-black mb-1">Armor Class (AC)</label>
+                <label className="block text-amber-200 font-fantasy font-black mb-1">Armor Class (AC)</label>
                 <input
                   type="number"
                   value={customAc}
                   onChange={(e) => setCustomAc(parseInt(e.target.value, 10) || 15)}
-                  className="w-full bg-[#fdf8ee] text-[#2b170a] border-2 border-amber-900/40 font-mono font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-600 focus:outline-none shadow-inner"
+                  className="w-full bg-slate-900/90 text-amber-100 border-2 border-amber-800/60 font-mono font-semibold rounded-xl p-2 focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-inner"
                 />
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-amber-950/10 border-2 border-amber-900/30">
-              <div className="font-fantasy font-black text-amber-950 mb-2">Primary Weapon</div>
+            <div className="p-3 rounded-xl bg-amber-950/40 border-2 border-amber-800/50">
+              <div className="font-fantasy font-black text-amber-200 mb-2">Primary Weapon</div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-amber-900 font-semibold mb-0.5">Weapon Name</label>
+                  <label className="block text-amber-300 font-semibold mb-0.5">Weapon Name</label>
                   <input
                     type="text"
                     value={customWepName}
                     onChange={(e) => setCustomWepName(e.target.value)}
-                    className="w-full bg-[#fdf8ee] text-[#2b170a] border border-amber-900/40 font-semibold rounded-lg p-1.5 focus:outline-none shadow-inner"
+                    className="w-full bg-slate-900/90 text-amber-100 border border-amber-800/60 font-semibold rounded-lg p-1.5 focus:outline-none shadow-inner"
                   />
                 </div>
                 <div>
-                  <label className="block text-amber-900 font-semibold mb-0.5">To-Hit Mod (+X)</label>
+                  <label className="block text-amber-300 font-semibold mb-0.5">To-Hit Mod (+X)</label>
                   <input
                     type="number"
                     value={customToHit}
                     onChange={(e) => setCustomToHit(parseInt(e.target.value, 10) || 5)}
-                    className="w-full bg-[#fdf8ee] text-[#2b170a] border border-amber-900/40 font-mono font-semibold rounded-lg p-1.5 focus:outline-none shadow-inner"
+                    className="w-full bg-slate-900/90 text-amber-100 border border-amber-800/60 font-mono font-semibold rounded-lg p-1.5 focus:outline-none shadow-inner"
                   />
                 </div>
                 <div>
-                  <label className="block text-amber-900 font-semibold mb-0.5">Damage Formula</label>
+                  <label className="block text-amber-300 font-semibold mb-0.5">Damage Formula</label>
                   <input
                     type="text"
                     value={customDamage}
                     onChange={(e) => setCustomDamage(e.target.value)}
-                    className="w-full bg-[#fdf8ee] text-[#2b170a] border border-amber-900/40 font-mono font-semibold rounded-lg p-1.5 focus:outline-none shadow-inner"
+                    className="w-full bg-slate-900/90 text-amber-100 border border-amber-800/60 font-mono font-semibold rounded-lg p-1.5 focus:outline-none shadow-inner"
                   />
                 </div>
               </div>

@@ -83,6 +83,29 @@
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
 }
 
+/* Dark Antiqued Vellum Cards (Zero Eye-Strain Dark Fantasy System) */
+.card-dark-vellum {
+  background-color: #1c1510;
+  border: 1px solid rgba(180, 110, 45, 0.35);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.5);
+  color: #eeddbb;
+}
+
+.card-dark-vellum-interactive {
+  background-color: #1f1812;
+  border: 1px solid rgba(180, 110, 45, 0.35);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6), 0 3px 8px rgba(0, 0, 0, 0.4);
+  color: #eeddbb;
+  transition: all 0.15s ease-in-out;
+}
+
+.card-dark-vellum-interactive:hover:not(:disabled) {
+  background-color: #271f17;
+  border-color: rgba(217, 140, 60, 0.65);
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.5), 0 6px 16px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
+}
+
 /* Ornate Fantasy Button */
 .btn-fantasy-gold {
   background: linear-gradient(180deg, #d97706 0%, #b45309 60%, #78350f 100%);
